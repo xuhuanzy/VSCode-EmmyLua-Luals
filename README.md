@@ -1,11 +1,13 @@
 ![logo](/res/logo.png)
-# EmmyLua for VSCode
+# EmmyLua for VSCode Adapt Luals
 
-QQ交流群：`29850775` (最新版本以及部分视频演示在群文件中下载)
+更倾向于`Luals`使用习惯的`EmmyLua-Rust`.
+
+QQ交流群：`1063151386` (最新版本以及部分视频演示在群文件中下载)
 
 [![Online EmmyLua Doc](https://img.shields.io/badge/emmy-doc-46BC99.svg?style=flat-square)](https://emmylua.github.io)
 [![donate](https://img.shields.io/badge/donate-emmy-FF69B4.svg?style=flat-square)](https://emmylua.github.io/donate.html)
-[![加入QQ群](https://img.shields.io/badge/chat-QQ群-46BC99.svg?style=flat-square)](//shang.qq.com/wpa/qunwpa?idkey=f1acce081c45fbb5670ed5f880f7578df7a8b84caa5d2acec230ac957f0c1716)
+[![加入QQ群](https://img.shields.io/badge/chat-QQ群-46BC99.svg?style=flat-square)](https://qm.qq.com/q/umy5IBl0NU)
 
 [更新日志](CHANGELOG_CN.md)
 
@@ -19,16 +21,6 @@ QQ交流群：`29850775` (最新版本以及部分视频演示在群文件中下
 **Q (English)**: Which other extensions are included in the vscode-emmylua suite?  
 **A (中文)**: [EmmyLuaCodeStyle](https://marketplace.visualstudio.com/items?itemName=CppCXY.emmylua-codestyle), [EmmyLuaUnity](https://marketplace.visualstudio.com/items?itemName=CppCXY.emmylua-unity)  
 **A (English)**: Install [EmmyLuaCodeStyle](https://marketplace.visualstudio.com/items?itemName=CppCXY.emmylua-codestyle) and [EmmyLuaUnity](https://marketplace.visualstudio.com/items?itemName=CppCXY.emmylua-unity)  
-
-**Q (中文)**: 为什么附加调试没有作用？  
-**Q (English)**: Why doesn't attach debugging work?  
-**A (中文)**: 调试会尝试获取进程中的 Lua 符号，因此需要进程导出 Lua 符号  
-**A (English)**: The debugger needs Lua symbols from the process, so the process must export them  
-
-**Q (中文)**: Emmy New Debug 为什么连不上目标？  
-**Q (English)**: Why does Emmy New Debug fail to connect?  
-**A (中文)**: 可能是插入代码 require 失败或返回 true，表明可执行文件未导出 Lua 符号  
-**A (English)**: Usually the injected require code fails or returns true, indicating missing Lua symbols  
 
 **Q (中文)**: 为什么打开项目后会有大量未定义变量警告？  
 **Q (English)**: Why do many undefined variable warnings appear after opening the project?  
@@ -54,19 +46,3 @@ QQ交流群：`29850775` (最新版本以及部分视频演示在群文件中下
 **Q (English)**: Why is there no documentation?  
 **A (中文)**: 配置文件文档见 https://github.com/CppCXY/emmylua-analyzer-rust/blob/main/docs/config/emmyrc_json_CN.md  
 **A (English)**: See configuration docs at https://github.com/CppCXY/emmylua-analyzer-rust/blob/main/docs/config/emmyrc_json_EN.md  
-
-## FAQ – Debugging (中文 & English)
-
-**Remote Debug Setup (中文)**  
-1) 在 VSCode 中打开 Lua 文件  
-2) 插入调试库路径并 require  
-3) 在需要断点处添加 dbg.waitIDE(); dbg.breakHere()  
-4) 运行外部程序等待连接  
-5) 启动 “EmmyLua New Debug” 与目标调试  
-
-**Remote Debug Setup (English)**  
-1) Load your Lua file in VSCode  
-2) Inject the debugger path and require it  
-3) Add dbg.waitIDE(); dbg.breakHere() where you want to break  
-4) Run your external program, which waits for a debugger  
-5) Launch “EmmyLua New Debug” to connect and debug  
