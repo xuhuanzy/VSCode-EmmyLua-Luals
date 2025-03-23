@@ -1,10 +1,10 @@
 {
-    "name": "emmylua",
-    "displayName": "EmmyLua",
-    "description": "EmmyLua for vscode",
+    "name": "emmylua-luals",
+    "displayName": "emmylua-luals",
+    "description": "EmmyLua with LuaLS-oriented behavior",
     "version": "0.9.16",
     "icon": "res/icon.png",
-    "publisher": "tangzx",
+    "publisher": "xuhuanzy",
     "engines": {
         "vscode": "^1.89.0"
     },
@@ -22,7 +22,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/EmmyLua/VSCode-EmmyLua"
+        "url": "https://github.com/xuhuanzy/VSCode-EmmyLua-Luals"
     },
     "bugs": {
         "url": "https://github.com/EmmyLua/VSCode-EmmyLua/issues"
