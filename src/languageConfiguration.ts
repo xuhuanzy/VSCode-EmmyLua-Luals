@@ -1,71 +1,85 @@
-import { LanguageConfiguration, IndentAction, IndentationRule } from "vscode";
+import { LanguageConfiguration, IndentAction, AutoClosingPair, SyntaxTokenType } from "vscode";
 import { workspace } from "vscode";
 export class LuaLanguageConfiguration implements LanguageConfiguration {
     public onEnterRules: any[];
 
+    public autoClosingPairs: AutoClosingPair[] = [
+        { open: "{", close: "}" },
+        { open: "[", close: "]" },
+        { open: "(", close: ")" },
+        { open: "'", close: "'", notIn: [SyntaxTokenType.String] },
+        { open: '"', close: '"', notIn: [SyntaxTokenType.String] },
+        { open: "[=", close: "=]" },
+        { open: "[==", close: "==]" },
+        { open: "[===", close: "===]" },
+        { open: "[====", close: "====]" },
+        { open: "[=====", close: "=====]" },
+    ];
+
     constructor() {
         this.onEnterRules = [
             {
-                // 匹配 function 语句的行
-                beforeText: /^\s*function\s+\w*\s*\(.*\)\s*$/,
-                afterText: /^\s*end\s*$/,
-                action: { indentAction: IndentAction.IndentOutdent, appendText: "\t" }
+                beforeText: /\)\s*$/,
+                afterText: /^\s*end\b/,
+                action: {
+                    indentAction: IndentAction.IndentOutdent,
+                }
             },
             {
-                // 匹配局部函数定义的行
-                beforeText: /^\s*local\s+\w+\s*=\s*function\s*\(.*\)\s*$/,
-                afterText: /^\s*end\s*$/,
-                action: { indentAction: IndentAction.IndentOutdent, appendText: "\t" }
+                beforeText: /\b()\s*$/,
+                afterText: /^\s*end\b/,
+                action: {
+                    indentAction: IndentAction.IndentOutdent,
+                }
             },
             {
-                // 匹配 xxx = function 语句的行
-                beforeText: /^\s*.*\s*=\s*function\s*\(.*\)\s*$/,
-                afterText: /^\s*end\s*$/,
-                action: { indentAction: IndentAction.IndentOutdent, appendText: "\t" }
+                beforeText: /\b(repeat)\s*$/,
+                afterText: /^\s*until\b/,
+                action: {
+                    indentAction: IndentAction.IndentOutdent,
+                }
             },
-            {
-                // 匹配 local function 语句的行
-                beforeText: /^\s*local\s+function\s+\w*\s*\(.*\)\s*$/,
-                afterText: /^\s*end\s*$/,
-                action: { indentAction: IndentAction.IndentOutdent, appendText: "\t" }
-            }
+
         ];
 
-        // 读取配置决定是否添加三横线规则
         const config = workspace.getConfiguration(
             undefined,
             workspace.workspaceFolders?.[0]
         );
-        const autoInsertTripleDash = config.get<boolean>('emmylua.misc.autoInsertTripleDash', true);
-        // 第二个参数是默认值（当配置不存在时使用）
-        if (autoInsertTripleDash) {
+        // 是否自动补全注释
+        const completeAnnotation = config.get<boolean>('emmylua.language.completeAnnotation', true);
+        if (completeAnnotation) {
             this.onEnterRules = [
                 {
-                    action: { indentAction: IndentAction.None, appendText: "---" },
-                    beforeText: /^---/,
+                    beforeText: /^\s*---@/,
+                    action: {
+                        indentAction: IndentAction.None,
+                        appendText: "---@"
+                    }
                 },
-                ...this.onEnterRules
-            ];
-        } else {
-            this.onEnterRules = [
+                {
+                    beforeText: /^\s*--- @/,
+                    action: {
+                        indentAction: IndentAction.None,
+                        appendText: "--- @"
+                    }
+                },
+                {
+                    beforeText: /^\s*--- /,
+                    action: {
+                        indentAction: IndentAction.None,
+                        appendText: "--- "
+                    }
+                },
+                {
+                    beforeText: /^\s*---/,
+                    action: {
+                        indentAction: IndentAction.None,
+                        appendText: "---"
+                    }
+                },
                 ...this.onEnterRules
             ];
         }
     }
-
-    public indentationRules: IndentationRule = {
-        // 匹配需要在下一行增加缩进的模式，例如函数定义、局部函数定义和 do 语句
-        indentNextLinePattern: /^\s*(local\s+\w+\s*=\s*function\s*\(.*\)\s*|function\s+\w*\s*\(.*\)\s*|.*\s*do\s*|.*\s*=\s*function\s*\(.*\)\s*)$/,
-
-        // 匹配需要减少缩进的模式，例如 else、elseif 和 end 关键字
-        decreaseIndentPattern: /^\s*(else|elseif|end|until)\b/,
-
-        // 匹配需要增加缩进的模式，例如 function、if、else、elseif、for、while、repeat、until、do 和 then 关键字
-        increaseIndentPattern: /^\s*(function|local\s+\w+\s*=\s*function|local\s+function|if|else|elseif|for|while|repeat|do|then|.*\s*=\s*function)\b/,
-
-        // 匹配不应改变缩进的模式，例如单行注释和多行注释的结束
-        unIndentedLinePattern: /^\s*(--.*|.*\*\/)$/
-    };
-
-    public wordPattern = /((?<=')[^']+(?='))|((?<=")[^"]+(?="))|(-?\d*\.\d\w*)|([^\`\~\!\@\$\^\&\*\(\)\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\s]+)/g;
 }

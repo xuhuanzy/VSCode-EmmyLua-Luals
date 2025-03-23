@@ -1,4 +1,4 @@
 {
-    "config.autoInsertTripleDash.description": "Automatically insert \"---\" when line breaking after a comment",
+    "config.language.completeAnnotation": "Automatically insert \"---@ \" after a line break following a annotation.",
     "config.misc.executablePath": "Specify the executable file path in VSCode"
 }

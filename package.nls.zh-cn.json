@@ -1,4 +1,4 @@
 {
-    "config.autoInsertTripleDash.description": "在注解后换行时自动插入 \"---\"",
+    "config.language.completeAnnotation": "在注解后换行时自动插入 \"---@ \"。",
     "config.misc.executablePath": "VSCode中指定可执行文件路径"
 }

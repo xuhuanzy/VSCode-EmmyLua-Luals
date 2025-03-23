@@ -9,16 +9,15 @@
         "vscode": "^1.89.0"
     },
     "categories": [
+        "Linters",
         "Programming Languages",
-        "Debuggers"
+        "Snippets"
     ],
-    "activationEvents": [
-        "onDebug"
-    ],
+    "activationEvents": [],
     "keywords": [
-        "lua",
-        "emmylua",
-        "debugger"
+        "Lua",
+        "IntelliSense",
+        "EmmyLua"
     ],
     "repository": {
         "type": "git",
@@ -68,13 +67,15 @@
                     "type": "array",
                     "default": []
                 },
-                "emmylua.misc.autoInsertTripleDash": {
+                "emmylua.language.completeAnnotation": {
                     "type": "boolean",
                     "default": true,
-                    "description": "%config.autoInsertTripleDash.description%"
+                    "scope": "resource",
+                    "description": "%config.language.completeAnnotation%"
                 },
                 "emmylua.misc.executablePath": {
                     "type": "string",
+                    "scope": "resource",
                     "default": "",
                     "description": "%config.misc.executablePath%"
                 }
