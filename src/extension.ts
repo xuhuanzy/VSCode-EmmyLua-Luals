@@ -4,22 +4,15 @@ import * as vscode from 'vscode';
 import * as path from "path";
 import * as net from "net";
 import * as process from "process";
-import * as Annotator from "./annotator";
 
 import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from "vscode-languageclient/node";
 import { LuaLanguageConfiguration } from './languageConfiguration';
-import { EmmyNewDebuggerProvider } from './debugger/new_debugger/EmmyNewDebuggerProvider';
-import { EmmyAttachDebuggerProvider } from './debugger/attach/EmmyAttachDebuggerProvider';
-import { EmmyLaunchDebuggerProvider } from './debugger/launch/EmmyLaunchDebuggerProvider';
 import { EmmyContext } from './emmyContext';
-import { InlineDebugAdapterFactory } from './debugger/DebugFactory'
 import * as os from 'os';
 import * as fs from 'fs';
 import { IServerLocation, IServerPosition } from './lspExt';
-import { onDidChangeConfiguration } from './annotator';
 
 export let ctx: EmmyContext;
-let activeEditor: vscode.TextEditor;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log("emmy lua actived!");
@@ -31,19 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("emmy.stopServer", stopServer));
     context.subscriptions.push(vscode.commands.registerCommand("emmy.restartServer", restartServer));
     context.subscriptions.push(vscode.commands.registerCommand("emmy.showReferences", showReferences));
-    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(onDidChangeTextDocument, null, context.subscriptions));
-    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(onDidChangeActiveTextEditor, null, context.subscriptions));
-    context.subscriptions.push(vscode.commands.registerCommand("emmy.insertEmmyDebugCode", insertEmmyDebugCode));
     context.subscriptions.push(vscode.languages.setLanguageConfiguration("lua", new LuaLanguageConfiguration()));
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration("emmylua")) {
-                onDidChangeConfiguration()
-            }
-        })
-    );
     startServer();
-    registerDebuggers();
     return {
         reportAPIDoc: (classDoc: any) => {
             ctx?.client?.sendRequest("emmy/reportAPI", classDoc);
@@ -55,47 +37,11 @@ export function deactivate() {
     ctx.dispose();
 }
 
-function registerDebuggers() {
-    const context = ctx.extensionContext;
-    const emmyProvider = new EmmyNewDebuggerProvider('emmylua_new', context);
-    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider("emmylua_new", emmyProvider));
-    context.subscriptions.push(emmyProvider);
-    const emmyAttachProvider = new EmmyAttachDebuggerProvider('emmylua_attach', context);
-    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('emmylua_attach', emmyAttachProvider));
-    context.subscriptions.push(emmyAttachProvider);
-    const emmyLaunchProvider = new EmmyLaunchDebuggerProvider('emmylua_launch', context);
-    context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('emmylua_launch', emmyLaunchProvider));
-    context.subscriptions.push(emmyLaunchProvider);
-    if (ctx.debugMode) {
-        const factory = new InlineDebugAdapterFactory();
-        context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory('emmylua_new', factory));
-        context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory('emmylua_attach', factory));
-        context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory('emmylua_launch', factory));
-    }
-}
 
-function onDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
-    if (activeEditor && activeEditor.document === event.document
-        && activeEditor.document.languageId === ctx.LANGUAGE_ID
-        && ctx.client != undefined
-    ) {
-        Annotator.requestAnnotators(activeEditor, ctx.client);
-    }
-}
-
-function onDidChangeActiveTextEditor(editor: vscode.TextEditor | undefined) {
-    if (editor
-        && editor.document.languageId === ctx.LANGUAGE_ID
-        && ctx.client != undefined) {
-        activeEditor = editor as vscode.TextEditor;
-        Annotator.requestAnnotators(activeEditor, ctx.client);
-    }
-}
 
 
 async function startServer() {
     doStartServer().then(() => {
-        onDidChangeActiveTextEditor(vscode.window.activeTextEditor);
     }).catch(reason => {
         ctx.setServerStatus({
             health: "error",
@@ -188,46 +134,4 @@ function showReferences(uri: string, pos: IServerPosition, locations: IServerLoc
 
 function stopServer() {
     ctx.stopServer();
-}
-
-async function insertEmmyDebugCode() {
-    const context = ctx.extensionContext;
-    const activeEditor = vscode.window.activeTextEditor;
-    if (!activeEditor) {
-        return;
-    }
-    const document = activeEditor.document;
-    if (document.languageId !== 'lua') {
-        return;
-    }
-
-    let dllPath = '';
-    const isWindows = process.platform === 'win32';
-    const isMac = process.platform === 'darwin';
-    const isLinux = process.platform === 'linux';
-    if (isWindows) {
-        const arch = await vscode.window.showQuickPick(['x64', 'x86']);
-        if (!arch) {
-            return;
-        }
-        dllPath = path.join(context.extensionPath, `debugger/emmy/windows/${arch}/?.dll`);
-    }
-    else if (isMac) {
-        const arch = await vscode.window.showQuickPick(['x64', 'arm64']);
-        if (!arch) {
-            return;
-        }
-        dllPath = path.join(context.extensionPath, `debugger/emmy/mac/${arch}/emmy_core.dylib`);
-    }
-    else if (isLinux) {
-        dllPath = path.join(context.extensionPath, `debugger/emmy/linux/emmy_core.so`);
-    }
-
-    const host = 'localhost';
-    const port = 9966;
-    const ins = new vscode.SnippetString();
-    ins.appendText(`package.cpath = package.cpath .. ";${dllPath.replace(/\\/g, '/')}"\n`);
-    ins.appendText(`local dbg = require("emmy_core")\n`);
-    ins.appendText(`dbg.tcpListen("${host}", ${port})`);
-    activeEditor.insertSnippet(ins);
 }

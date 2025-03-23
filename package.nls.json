@@ -1,19 +1,4 @@
 {
-    "debug.attach.label": "EmmyLua: Attach by process id",
-    "debug.attach.name": "Attach by process id",
-    "debug.attach.target_pid": "Target pid",
-    "debug.attach.desc": "Attach process debugger",
-    "debug.attach.target_process": "Attach process by name",
-    "debug.attach.captureLog": "Capture process log with Windows Terminal",
-    
-    "debug.launch.label": "EmmyLua: Attach by launch program",
-    "debug.launch.name": "Attach by launch program",
-    "debug.launch.desc": "Launch program and debug with attach debugger",
-    "debug.launch.program": "Launch program and debug executable file",
-    "debug.launch.workingDir": "working directory",
-    "debug.launch.arguments": "arguments pass to executable file",
-    "debug.launch.blockOnExit": "block process when exit",
-    "debug.launch.newWindow": "create new windows",
     "config.autoInsertTripleDash.description": "Automatically insert \"---\" when line breaking after a comment",
     "config.misc.executablePath": "Specify the executable file path in VSCode"
 }
