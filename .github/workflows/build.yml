@@ -3,7 +3,7 @@ name: Build
 on: 
   push:
     branches:
-      - master
+      - luals
     tags:
       - "*.*.*"
 
@@ -36,12 +36,12 @@ jobs:
     - name: build
       run: |
         node ./build/prepare.js ${{ matrix.file }}
-        npx vsce package -o VSCode-EmmyLua-${{ matrix.target }}.vsix --target ${{ matrix.target }}
+        npx vsce package -o VSCode-EmmyLua-Luals-${{ matrix.target }}.vsix --target ${{ matrix.target }}
     - name: Upload
       uses: actions/upload-artifact@v4
       with: 
-        name: VSCode-EmmyLua-${{ matrix.target }}
-        path: ${{ github.workspace }}/VSCode-EmmyLua*.vsix
+        name: VSCode-EmmyLua-Luals-${{ matrix.target }}
+        path: ${{ github.workspace }}/VSCode-EmmyLua-Luals*.vsix
   
   publish:
     runs-on: ubuntu-latest
@@ -49,6 +49,6 @@ jobs:
     if: success() && startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/download-artifact@v4
-      - run: npx vsce publish --packagePath $(find VSCode-EmmyLua* -iname "*.vsix")
+      - run: npx vsce publish --packagePath $(find VSCode-EmmyLua-Luals* -iname "*.vsix")
         env:
           VSCE_PAT: ${{ secrets.VSCE_ACCESS_TOKEN }}
