@@ -2,7 +2,6 @@ const fs = require('fs');
 const download = require('download');
 const decompress = require('decompress')
 const decompressTargz = require('decompress-targz')
-const fc = require('filecopy');
 const config = require('./config').default;
 const args = process.argv;
 
@@ -16,11 +15,6 @@ async function downloadTo(url, path) {
 
 async function downloadDepends() {
     await Promise.all([
-        downloadTo(`${config.emmyDebuggerUrl}/${config.emmyDebuggerVersion}/linux-x64.zip`, 'temp/linux-x64.zip'),
-        downloadTo(`${config.emmyDebuggerUrl}/${config.emmyDebuggerVersion}/darwin-arm64.zip`, 'temp/darwin-arm64.zip'),
-        downloadTo(`${config.emmyDebuggerUrl}/${config.emmyDebuggerVersion}/darwin-x64.zip`, 'temp/darwin-x64.zip'),
-        downloadTo(`${config.emmyDebuggerUrl}/${config.emmyDebuggerVersion}/win32-x86.zip`, 'temp/win32-x86.zip'),
-        downloadTo(`${config.emmyDebuggerUrl}/${config.emmyDebuggerVersion}/win32-x64.zip`, 'temp/win32-x64.zip'),
         downloadTo(`${config.newLanguageServerUrl}/${config.newLanguageServerVersion}/${args[2]}`, `temp/${args[2]}`)
     ]);
 }
@@ -31,15 +25,6 @@ async function build() {
     }
 
     await downloadDepends();
-
-    // linux
-    await decompress('temp/linux-x64.zip', 'debugger/emmy/linux/');
-    // mac
-    await decompress('temp/darwin-x64.zip', 'debugger/emmy/mac/x64/');
-    await decompress('temp/darwin-arm64.zip', 'debugger/emmy/mac/arm64/');
-    // win
-    await decompress('temp/win32-x86.zip', 'debugger/emmy/windows/x86/');
-    await decompress('temp/win32-x64.zip', 'debugger/emmy/windows/x64/');
 
     // new ls
     if (args[2].endsWith('.tar.gz')) {
