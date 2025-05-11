@@ -1,5 +1,40 @@
 # Change Log
 
+
+# 0.9.19
+
+`FIX` 修复读取 UTF-8 BOM 编码的配置文件的问题
+
+`NEW` 支持`调用层次结构`功能，但目前仅支持传入调用
+
+`NEW` 支持新标签 `@internal` 用于成员或声明。当成员或声明被标记为 `@internal` 时，它仅在当前库内可见。这意味着如果你在一个库中使用 `@internal`，其他库或工作区无法访问此成员或声明。
+
+`NEW` 支持`转到实现`功能
+
+`NEW` 支持 `@nodisacrd` 并可提供原因
+
+`FIX` 修复一些性能问题
+
+`NEW` 调试器使用 zig 构建，现在可以在 glibc-2.17 系统上使用
+
+# 0.9.18
+
+`NEW` 现在可以通过 `<os-specific home dir>/.emmyrc.json`、`<os-specific config dir>/emmylua_ls/.emmyrc.json`，或者设置环境变量 `EMMYLUALS_CONFIG`（指向 JSON 配置文件的路径）在全局提供语言服务器的配置。全局配置优先级低于本地配置。
+
+`NEW` 现在类也可以从泛型类型中推断，并提供相应的补全。
+
+`CHG` 重构了流程分析算法
+
+`NEW` 数组返回值现在被视为可空类型。如果不想要这种行为，可以在配置文件中将 `strict.arrayIndex` 设置为 `false`。
+
+`FIX` 修复了一些 self 推断的问题
+
+`FIX` 修复了一些诊断动作的问题
+
+`FIX` 优化了一些类型检查
+
+`FIX` 优化了一些补全功能
+
 # 0.9.17
 
 `CHG` 重构类型推断

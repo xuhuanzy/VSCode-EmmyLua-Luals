@@ -2,7 +2,7 @@
     "displayName": "emmylua-luals",
     "name": "emmylua-luals",
     "description": "EmmyLua with LuaLS-oriented behavior",
-    "version": "0.9.17",
+    "version": "0.9.19",
     "icon": "res/icon.png",
     "publisher": "xuhuanzy",
     "engines": {
@@ -63,6 +63,11 @@
                     "default": true,
                     "description": "Mutable variable underline"
                 },
+                "emmylua.develop.port" : {
+                    "type": "number",
+                    "default": 5007,
+                    "description": "%config.develop.port%"
+                },
                 "emmylua.ls.startParameters": {
                     "type": "array",
                     "default": []
@@ -78,6 +83,22 @@
                     "scope": "resource",
                     "default": "",
                     "description": "%config.misc.executablePath%"
+                },
+                "emmylua.misc.globalConfigPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "%config.misc.globalConfigPath%"
+                },
+                "lua.trace.server": {
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "messages",
+                        "verbose"
+                    ],
+                    "default": "off",
+                    "markdownDescription": "Traces the communication between VS Code and the EmmyLua language server in the Output view. Default is `off`.",
+                    "scope": "window"
                 }
             }
         },
