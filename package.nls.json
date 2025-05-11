@@ -1,6 +1,6 @@
 {
     "config.language.completeAnnotation": "Automatically insert \"---@ \" after a line break following a annotation.",
-    "config.misc.executablePath": "Specify the executable file path in VSCode"
+    "config.misc.executablePath": "Specify the executable file path in VSCode",
     "config.develop.port": "Specify the port for the debugger to listen on",
     "config.misc.globalConfigPath": "Specify a path to the global configuration file"
 }

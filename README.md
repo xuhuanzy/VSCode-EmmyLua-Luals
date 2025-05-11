@@ -46,3 +46,9 @@ QQ交流群：`1063151386` (最新版本以及部分视频演示在群文件中�
 **Q (English)**: Why is there no documentation?  
 **A (中文)**: 配置文件文档见 https://github.com/CppCXY/emmylua-analyzer-rust/blob/main/docs/config/emmyrc_json_CN.md  
 **A (English)**: See configuration docs at https://github.com/CppCXY/emmylua-analyzer-rust/blob/main/docs/config/emmyrc_json_EN.md  
+
+## 编译
+
+```bash
+vsce package
+```
