@@ -111,12 +111,6 @@
                 }
             }
         },
-        "jsonValidation": [
-            {
-                "fileMatch": ".emmyrc.json",
-                "url": "./syntaxes/schema.json"
-            }
-        ],
         "colors": [],
         "semanticTokenScopes": [
             {
