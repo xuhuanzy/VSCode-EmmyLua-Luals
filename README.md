@@ -17,6 +17,9 @@ QQ交流群：`1063151386` (最新版本以及部分视频演示在群文件中�
 
 ## FAQ (中文 & English)
 
+**Q (中文)**: 如何将`.emmyrc.json`切换为中文提示?  
+**A (中文)**: 语言环境为中文, 启动插件后切换到任意`lua`文件即可切换为中文提示.
+
 **Q (中文)**: vscode-emmylua 全家桶还有哪些？  
 **Q (English)**: Which other extensions are included in the vscode-emmylua suite?  
 **A (中文)**: [EmmyLuaCodeStyle](https://marketplace.visualstudio.com/items?itemName=CppCXY.emmylua-codestyle), [EmmyLuaUnity](https://marketplace.visualstudio.com/items?itemName=CppCXY.emmylua-unity)  
