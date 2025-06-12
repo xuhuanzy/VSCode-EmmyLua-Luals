@@ -381,9 +381,9 @@
     "en": "Whether to enable strict mode array indexing.",
     "zh-CN": "是否启用严格模式数组索引，严格模式下数组取值返回将包含 nil。"
   },
-  "EmmyrcStrict.docIntegerConstMatchInt": {
-    "en": "`doc_integer_const` type can match `int` type.",
-    "zh-CN": "注解声明的`doc_integer_const`类型可以匹配`int`类型。用于`---@alias 1|2|3` 等场景。"
+  "EmmyrcStrict.docBaseConstMatchBaseType": {
+    "en": "Base constant types defined in doc can match base types, allowing int to match `---@alias id 1|2|3`, same for string.",
+    "zh-CN": "doc定义的基础常量类型可以匹配基础类型，使 int 可以匹配 `---@alias id 1|2|3`，string 同理。"
   },
   "EmmyrcStrict.metaOverrideFileDefine": {
     "en": "meta define overrides file define",

@@ -159,7 +159,7 @@
     "strict": {
       "default": {
         "arrayIndex": true,
-        "docIntegerConstMatchInt": true,
+        "docBaseConstMatchBaseType": true,
         "metaOverrideFileDefine": true,
         "requirePath": false,
         "typeCall": false
@@ -925,8 +925,8 @@
           "default": true,
           "type": "boolean"
         },
-        "docIntegerConstMatchInt": {
-          "description": "注解声明的`doc_integer_const`类型可以匹配`int`类型。用于`---@alias 1|2|3` 等场景。",
+        "docBaseConstMatchBaseType": {
+          "description": "doc定义的基础常量类型可以匹配基础类型，使 int 可以匹配 `---@alias id 1|2|3`，string 同理。",
           "default": false,
           "type": "boolean"
         },

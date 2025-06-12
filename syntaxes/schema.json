@@ -159,7 +159,7 @@
     "strict": {
       "default": {
         "arrayIndex": true,
-        "docIntegerConstMatchInt": true,
+        "docBaseConstMatchBaseType": true,
         "metaOverrideFileDefine": true,
         "requirePath": false,
         "typeCall": false
@@ -925,8 +925,8 @@
           "default": true,
           "type": "boolean"
         },
-        "docIntegerConstMatchInt": {
-          "description": "`doc_integer_const` type can match `int` type.",
+        "docBaseConstMatchBaseType": {
+          "description": "Base constant types defined in doc can match base types, allowing int to match `---@alias id 1|2|3`, same for string.",
           "default": false,
           "type": "boolean"
         },

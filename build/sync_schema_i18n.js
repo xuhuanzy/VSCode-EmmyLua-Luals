@@ -102,7 +102,7 @@ function translateDescriptions(obj, i18nData, currentPath = '') {
 function main() {
     try {
         // 读取 schema.json 文件
-        const schemaPath = path.join(__dirname, 'syntaxes', 'schema.json');
+        const schemaPath = path.join(__dirname, '..', 'syntaxes', 'schema.json');
         const schemaContent = fs.readFileSync(schemaPath, 'utf-8');
         const schema = JSON.parse(schemaContent);
 
@@ -119,7 +119,7 @@ function main() {
         });
 
         // 读取现有的 schema.i18n.json 文件
-        const i18nPath = path.join(__dirname, 'syntaxes', 'schema.i18n.json');
+        const i18nPath = path.join(__dirname, '..', 'syntaxes', 'schema.i18n.json');
         let existingI18n = {};
 
         if (fs.existsSync(i18nPath)) {
@@ -148,7 +148,7 @@ function main() {
             definitions: translatedDefinitions
         };
 
-        const zhCnPath = path.join(__dirname, 'syntaxes', 'schema.zh-cn.json');
+        const zhCnPath = path.join(__dirname, '..', 'syntaxes', 'schema.zh-cn.json');
         fs.writeFileSync(zhCnPath, JSON.stringify(translatedSchema, null, 2));
         console.log(`已生成中文版 schema.zh-cn.json 文件`);
 
