@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
     console.log("emmy lua actived!");
 
     // 注册动态JSON验证
-    registerDynamicJsonValidation(context);
+    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('emmyrc-schema', new EmmyrcSchemaContentProvider(context)));
 
     ctx = new EmmyContext(
         process.env['EMMY_DEV'] === "true",
@@ -60,6 +60,10 @@ async function doStartServer() {
     const clientOptions: LanguageClientOptions = {
         documentSelector: [{ scheme: 'file', language: ctx.LANGUAGE_ID }],
         initializationOptions: {},
+        markdown: {
+            isTrusted: true,
+            supportHtml: true,
+        },
     };
 
     let serverOptions: ServerOptions;
@@ -149,61 +153,54 @@ function stopServer() {
     ctx.stopServer();
 }
 
+
 /**
- * 根据语言环境动态注册JSON验证
+ * 用于动态提供 JSON Schema 内容。
  */
-function registerDynamicJsonValidation(context: vscode.ExtensionContext) {
-    // 获取 VS Code 的当前语言环境
-    const locale = vscode.env.language;
-    let schemaPath: string;
+class EmmyrcSchemaContentProvider implements vscode.TextDocumentContentProvider {
+    private readonly schemaBaseDir: string;
 
-    // 根据语言环境选择对应的 Schema 文件
-    switch (locale) {
-        case 'zh-cn':
-        case 'zh-CN':
-        case 'zh':
-            schemaPath = 'schema.zh-cn.json';
-            break;
-        case 'en':
-        case 'en-US':
-        case 'en-GB':
-        default:
-            schemaPath = 'schema.json';
-            break;
+    constructor(context: vscode.ExtensionContext) {
+        this.schemaBaseDir = path.join(context.extensionPath, 'syntaxes');
     }
 
-    // 构建schema文件的完整路径
-    const schemaFilePath = path.join(context.extensionPath, 'syntaxes', schemaPath);
+    async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
+        const schemaIdentifier = path.posix.basename(uri.path);
+        const locale = vscode.env.language;
+        let schemaFileName: string;
 
-    // 检查schema文件是否存在，如果不存在则使用默认的
-    if (!fs.existsSync(schemaFilePath)) {
-        schemaPath = 'schema.json';
+        if (schemaIdentifier === 'emmyrc') {
+            switch (locale) {
+                case 'zh-cn':
+                case 'zh-CN':
+                case 'zh':
+                    schemaFileName = 'schema.zh-cn.json';
+                    break;
+                case 'en':
+                case 'en-US':
+                case 'en-GB':
+                default:
+                    schemaFileName = 'schema.json';
+                    break;
+            }
+        } else {
+            return '';
+        }
+
+        // 检查schema文件是否存在，如果不存在则使用默认的
+        let schemaFilePath = path.join(this.schemaBaseDir, schemaFileName);
+        if (!fs.existsSync(schemaFilePath)) {
+            schemaFilePath = path.join(this.schemaBaseDir, 'schema.json');
+        }
+
+        try {
+            return await fs.promises.readFile(schemaFilePath, 'utf8');
+        } catch (error: any) {
+            return JSON.stringify({
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "Error Loading Schema",
+                "description": `Could not load schema: ${schemaFileName}. Error: ${error.message}.`
+            });
+        }
     }
-
-    const schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'syntaxes', schemaPath));
-
-    // 通过配置API动态设置JSON验证
-    const config = vscode.workspace.getConfiguration();
-    const currentJsonSchemas = config.get<any[]>('json.schemas') || [];
-
-    // 检查是否已经存在.emmyrc.json的schema配置
-    const existingSchemaIndex = currentJsonSchemas.findIndex(schema =>
-        schema.fileMatch && schema.fileMatch.includes('.emmyrc.json')
-    );
-
-    const newSchema = {
-        fileMatch: ['.emmyrc.json'],
-        url: schemaUri.toString()
-    };
-
-    if (existingSchemaIndex >= 0) {
-        // 更新现有的schema配置
-        currentJsonSchemas[existingSchemaIndex] = newSchema;
-    } else {
-        // 添加新的schema配置
-        currentJsonSchemas.push(newSchema);
-    }
-
-    // 更新配置
-    config.update('json.schemas', currentJsonSchemas, vscode.ConfigurationTarget.Workspace);
 }

@@ -13,7 +13,9 @@
         "Programming Languages",
         "Snippets"
     ],
-    "activationEvents": [],
+    "activationEvents": [
+        "workspaceContains:./.emmyrc.json"
+    ],
     "keywords": [
         "Lua",
         "IntelliSense",
@@ -55,6 +57,16 @@
                 "language": "lua"
             }
         ],
+        "jsonValidation": [
+            {
+                "fileMatch": ".emmyrc.json",
+                "url": "emmyrc-schema://schemas/emmyrc"
+            },
+            {
+                "fileMatch": ".emmyrc.json",
+                "url": "./syntaxes/schema.json"
+            }
+        ],
         "configuration": {
             "title": "EmmyLua",
             "properties": {
@@ -63,7 +75,7 @@
                     "default": true,
                     "description": "Mutable variable underline"
                 },
-                "emmylua.develop.port" : {
+                "emmylua.develop.port": {
                     "type": "number",
                     "default": 5007,
                     "description": "%config.develop.port%"
