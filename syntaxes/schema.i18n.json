@@ -27,6 +27,9 @@
     "en": "Await in sync",
     "zh-CN": "在同步上下文中使用 await。"
   },
+  "DiagnosticCode.cast-type-mismatch": {
+    "en": "cast-type-mismatch"
+  },
   "DiagnosticCode.circle-doc-class": {
     "en": "Circle Doc Class",
     "zh-CN": "类型循环依赖。"
@@ -223,6 +226,10 @@
     "en": "A separator used in auto-require paths.",
     "zh-CN": "自动补全 require 语句时使用的分隔符。"
   },
+  "EmmyrcCompletion.baseFunctionIncludesName": {
+    "en": "Whether to include the name in the base function completion. effect: `function () end` -> `function name() end`.",
+    "zh-CN": "是否在基本函数补全中包含函数名。效果: `function () end` -> `function name() end`。"
+  },
   "EmmyrcCompletion.callSnippet": {
     "en": "Whether to use call snippets in completions.",
     "zh-CN": "是否使用代码片段补全函数调用。"
@@ -303,6 +310,10 @@
     "en": "Whether to enable local hints. Whether to enable override hints.",
     "zh-CN": "是否启用局部变量提示。"
   },
+  "EmmyrcInlayHint.metaCallHint": {
+    "en": "Whether to enable meta __call operator hints.",
+    "zh-CN": "是否启用 `__call` 调用提示。"
+  },
   "EmmyrcInlayHint.overrideHint": {
     "en": "Whether to enable override hints.",
     "zh-CN": "是否启用重写提示。"
@@ -310,6 +321,10 @@
   "EmmyrcInlayHint.paramHint": {
     "en": "Whether to enable parameter hints.",
     "zh-CN": "是否启用参数提示。"
+  },
+  "EmmyrcInlineValues.enable": {
+    "en": "Whether to enable inline values.",
+    "zh-CN": "是否启用内联值。用于在调试断点时显示变量值。"
   },
   "EmmyrcLuaVersion.Lua5.1": {
     "en": "Lua 5.1"

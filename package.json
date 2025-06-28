@@ -52,11 +52,6 @@
                 "configuration": "./language-configuration.json"
             }
         ],
-        "breakpoints": [
-            {
-                "language": "lua"
-            }
-        ],
         "jsonValidation": [
             {
                 "fileMatch": ".emmyrc.json",
