@@ -734,6 +734,13 @@
           "enum": [
             "camel-case"
           ]
+        },
+        {
+          "description": "When returning class definition, use class name, otherwise keep original name.",
+          "type": "string",
+          "enum": [
+            "keep-class"
+          ]
         }
       ]
     },

@@ -286,6 +286,10 @@
     "en": "Keep the original filename.",
     "zh-CN": "保持原始文件名。"
   },
+  "EmmyrcFilenameConvention.keep-class": {
+    "en": "When returning class definition, use class name, otherwise keep original name.",
+    "zh-CN": "当返回类定义时，使用类名，否则保持原始名称。"
+  },
   "EmmyrcFilenameConvention.pascal-case": {
     "en": "Convert the filename to PascalCase.",
     "zh-CN": "将文件名转换为帕斯卡(PascalCase)命名。"
