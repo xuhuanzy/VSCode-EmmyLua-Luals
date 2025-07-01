@@ -2,6 +2,12 @@
 
 ![logo](/res/logo.png)
 
+## ⚠️ 注意
+
+本插件相对于原版作出了一些修改, 主要是移除了`emmylua`自带的调试器, 添加了配置项 i18n 等. 使之体验与`luals`更接近.
+
+目前与上游`emmylua-rust`版本同步, 不排除未来会与上游版本出现差异, 可能会添加一些不允许合并进上游 lsp 的特性.
+
 EmmyLua is a powerful Lua language support extension for Visual Studio Code, providing intelligent code completion, debugging, and analysis capabilities.
 
 ## 📋 Quick Links
