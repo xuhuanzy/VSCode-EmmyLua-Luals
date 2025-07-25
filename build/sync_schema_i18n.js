@@ -19,8 +19,8 @@ function extractDescriptions(obj, currentPath = '', result = {}) {
                 .replace(/\.$/, ''); // 移除结尾的点
 
             // 如果是在 oneOf 中的枚举值，需要特殊处理
-            if (currentPath.includes('.oneOf.') && obj.enum) {
-                const enumValue = obj.enum[0]; // 取第一个枚举值作为标识
+            if (currentPath.includes('.oneOf.') && obj.const) {
+                const enumValue = obj.const; // 取第一个枚举值作为标识
                 cleanPath = cleanPath + '.' + enumValue;
             }
 
@@ -77,8 +77,8 @@ function translateDescriptions(obj, i18nData, currentPath = '') {
                 .replace(/\.$/, '');
 
             // 如果是在 oneOf 中的枚举值，需要特殊处理
-            if (currentPath.includes('.oneOf.') && obj.enum) {
-                const enumValue = obj.enum[0];
+            if (currentPath.includes('.oneOf.') && obj.const) {
+                const enumValue = obj.const;
                 cleanPath = cleanPath + '.' + enumValue;
             }
 
@@ -107,7 +107,7 @@ function main() {
         const schema = JSON.parse(schemaContent);
 
         // 只处理 definitions 部分
-        const definitions = schema.definitions || {};
+        const definitions = schema.$defs || {};
 
         // 提取所有 description
         const descriptions = extractDescriptions(definitions);
@@ -142,10 +142,10 @@ function main() {
         console.log(`已更新 schema.i18n.json 文件`);
 
         // 生成中文版的 schema.zh-cn.json（只处理 definitions 部分）
-        const translatedDefinitions = translateDescriptions(schema.definitions, finalDescriptions);
+        const translatedDefinitions = translateDescriptions(schema.$defs, finalDescriptions);
         const translatedSchema = {
             ...schema,
-            definitions: translatedDefinitions
+            $defs: translatedDefinitions
         };
 
         const zhCnPath = path.join(__dirname, '..', 'syntaxes', 'schema.zh-cn.json');

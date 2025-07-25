@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Emmyrc",
   "type": "object",
   "properties": {
@@ -10,26 +10,19 @@
       ]
     },
     "codeAction": {
+      "$ref": "#/$defs/EmmyrcCodeAction",
       "default": {
         "insertSpace": false
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcCodeAction"
-        }
-      ]
+      }
     },
     "codeLens": {
+      "$ref": "#/$defs/EmmyrcCodeLen",
       "default": {
         "enable": true
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcCodeLen"
-        }
-      ]
+      }
     },
     "completion": {
+      "$ref": "#/$defs/EmmyrcCompletion",
       "default": {
         "autoRequire": true,
         "autoRequireFunction": "require",
@@ -39,14 +32,10 @@
         "callSnippet": false,
         "enable": true,
         "postfix": "@"
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcCompletion"
-        }
-      ]
+      }
     },
     "diagnostics": {
+      "$ref": "#/$defs/EmmyrcDiagnostic",
       "default": {
         "diagnosticInterval": 500,
         "disable": [],
@@ -55,81 +44,61 @@
         "globals": [],
         "globalsRegex": [],
         "severity": {}
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcDiagnostic"
-        }
-      ]
+      }
+    },
+    "doc": {
+      "$ref": "#/$defs/EmmyrcDoc",
+      "default": {
+        "knownTags": [],
+        "privateName": []
+      }
     },
     "documentColor": {
+      "$ref": "#/$defs/EmmyrcDocumentColor",
       "default": {
         "enable": true
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcDocumentColor"
-        }
-      ]
+      }
     },
     "hint": {
+      "$ref": "#/$defs/EmmyrcInlayHint",
       "default": {
         "enable": true,
+        "enumParamHint": false,
         "indexHint": true,
         "localHint": true,
         "metaCallHint": true,
         "overrideHint": true,
         "paramHint": true
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcInlayHint"
-        }
-      ]
+      }
     },
     "hover": {
+      "$ref": "#/$defs/EmmyrcHover",
       "default": {
         "enable": true
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcHover"
-        }
-      ]
+      }
     },
     "inlineValues": {
+      "$ref": "#/$defs/EmmyrcInlineValues",
       "default": {
         "enable": true
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcInlineValues"
-        }
-      ]
+      }
     },
     "references": {
+      "$ref": "#/$defs/EmmyrcReference",
       "default": {
         "enable": true,
         "fuzzySearch": true,
         "shortStringSearch": false
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcReference"
-        }
-      ]
+      }
     },
     "resource": {
+      "$ref": "#/$defs/EmmyrcResource",
       "default": {
         "paths": []
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcResource"
-        }
-      ]
+      }
     },
     "runtime": {
+      "$ref": "#/$defs/EmmyrcRuntime",
       "default": {
         "classDefaultCall": {
           "forceNonColon": false,
@@ -141,48 +110,32 @@
         "requireLikeFunction": [],
         "requirePattern": [],
         "version": "LuaLatest"
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcRuntime"
-        }
-      ]
+      }
     },
     "semanticTokens": {
+      "$ref": "#/$defs/EmmyrcSemanticToken",
       "default": {
         "enable": true
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcSemanticToken"
-        }
-      ]
+      }
     },
     "signature": {
+      "$ref": "#/$defs/EmmyrcSignature",
       "default": {
         "detailSignatureHelper": true
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcSignature"
-        }
-      ]
+      }
     },
     "strict": {
+      "$ref": "#/$defs/EmmyrcStrict",
       "default": {
         "arrayIndex": true,
         "docBaseConstMatchBaseType": true,
         "metaOverrideFileDefine": true,
         "requirePath": false,
         "typeCall": false
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcStrict"
-        }
-      ]
+      }
     },
     "workspace": {
+      "$ref": "#/$defs/EmmyrcWorkspace",
       "default": {
         "enableReindex": false,
         "encoding": "utf-8",
@@ -193,32 +146,27 @@
         "preloadFileSize": 0,
         "reindexDuration": 5000,
         "workspaceRoots": []
-      },
-      "allOf": [
-        {
-          "$ref": "#/definitions/EmmyrcWorkspace"
-        }
-      ]
+      }
     }
   },
-  "definitions": {
+  "$defs": {
     "ClassDefaultCall": {
       "type": "object",
       "properties": {
         "forceNonColon": {
           "description": "强制非冒号定义。当 `function_name` 不为空时，生效。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "forceReturnSelf": {
           "description": "强制返回 `self`。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "functionName": {
           "description": "类默认重载函数。例如：\"__init\"。",
-          "default": "",
-          "type": "string"
+          "type": "string",
+          "default": ""
         }
       }
     },
@@ -233,303 +181,232 @@
         {
           "description": "语法错误。",
           "type": "string",
-          "enum": [
-            "syntax-error"
-          ]
+          "const": "syntax-error"
         },
         {
           "description": "注解语法错误。",
           "type": "string",
-          "enum": [
-            "doc-syntax-error"
-          ]
+          "const": "doc-syntax-error"
         },
         {
           "description": "类型未找到。",
           "type": "string",
-          "enum": [
-            "type-not-found"
-          ]
+          "const": "type-not-found"
         },
         {
           "description": "缺少返回语句。",
           "type": "string",
-          "enum": [
-            "missing-return"
-          ]
+          "const": "missing-return"
         },
         {
           "description": "参数类型不匹配。",
           "type": "string",
-          "enum": [
-            "param-type-not-match"
-          ]
+          "const": "param-type-not-match"
         },
         {
           "description": "缺少参数。",
           "type": "string",
-          "enum": [
-            "missing-parameter"
-          ]
+          "const": "missing-parameter"
         },
         {
           "description": "冗余参数。",
           "type": "string",
-          "enum": [
-            "redundant-parameter"
-          ]
+          "const": "redundant-parameter"
         },
         {
           "description": "不可达的代码。",
           "type": "string",
-          "enum": [
-            "unreachable-code"
-          ]
+          "const": "unreachable-code"
         },
         {
           "description": "未使用的变量。",
           "type": "string",
-          "enum": [
-            "unused"
-          ]
+          "const": "unused"
         },
         {
           "description": "未定义的全局变量。",
           "type": "string",
-          "enum": [
-            "undefined-global"
-          ]
+          "const": "undefined-global"
         },
         {
           "description": "已弃用。",
           "type": "string",
-          "enum": [
-            "deprecated"
-          ]
+          "const": "deprecated"
         },
         {
           "description": "成员可见性检查。",
           "type": "string",
-          "enum": [
-            "access-invisible"
-          ]
+          "const": "access-invisible"
         },
         {
           "description": "不可丢弃返回值。",
           "type": "string",
-          "enum": [
-            "discard-returns"
-          ]
+          "const": "discard-returns"
         },
         {
           "description": "未定义的字段。",
           "type": "string",
-          "enum": [
-            "undefined-field"
-          ]
+          "const": "undefined-field"
         },
         {
           "description": "局部常量重新赋值。",
           "type": "string",
-          "enum": [
-            "local-const-reassign"
-          ]
+          "const": "local-const-reassign"
         },
         {
           "description": "迭代变量重新赋值。",
           "type": "string",
-          "enum": [
-            "iter-variable-reassign"
-          ]
+          "const": "iter-variable-reassign"
         },
         {
           "description": "重复定义的类型。",
           "type": "string",
-          "enum": [
-            "duplicate-type"
-          ]
+          "const": "duplicate-type"
         },
         {
           "description": "重复定义的局部变量。",
           "type": "string",
-          "enum": [
-            "redefined-local"
-          ]
+          "const": "redefined-local"
         },
         {
           "description": "重复定义的标签。",
           "type": "string",
-          "enum": [
-            "redefined-label"
-          ]
+          "const": "redefined-label"
         },
         {
           "description": "代码风格检查。",
           "type": "string",
-          "enum": [
-            "code-style-check"
-          ]
+          "const": "code-style-check"
         },
         {
           "description": "需要检查 nil。",
           "type": "string",
-          "enum": [
-            "need-check-nil"
-          ]
+          "const": "need-check-nil"
         },
         {
           "description": "在同步上下文中使用 await。",
           "type": "string",
-          "enum": [
-            "await-in-sync"
-          ]
+          "const": "await-in-sync"
         },
         {
           "description": "注解使用错误。",
           "type": "string",
-          "enum": [
-            "annotation-usage-error"
-          ]
+          "const": "annotation-usage-error"
         },
         {
           "description": "返回类型不匹配。",
           "type": "string",
-          "enum": [
-            "return-type-mismatch"
-          ]
+          "const": "return-type-mismatch"
         },
         {
           "description": "缺少返回值。",
           "type": "string",
-          "enum": [
-            "missing-return-value"
-          ]
+          "const": "missing-return-value"
         },
         {
           "description": "冗余的返回值。",
           "type": "string",
-          "enum": [
-            "redundant-return-value"
-          ]
+          "const": "redundant-return-value"
         },
         {
           "description": "未使用注解定义的参数。",
           "type": "string",
-          "enum": [
-            "undefined-doc-param"
-          ]
+          "const": "undefined-doc-param"
         },
         {
           "description": "重复定义的字段(注解)。",
           "type": "string",
-          "enum": [
-            "duplicate-doc-field"
-          ]
+          "const": "duplicate-doc-field"
+        },
+        {
+          "description": "未知文档注解。",
+          "type": "string",
+          "const": "unknown-doc-tag"
         },
         {
           "description": "缺少字段。",
           "type": "string",
-          "enum": [
-            "missing-fields"
-          ]
+          "const": "missing-fields"
         },
         {
           "description": "注入字段。",
           "type": "string",
-          "enum": [
-            "inject-field"
-          ]
+          "const": "inject-field"
         },
         {
           "description": "类型循环依赖。",
           "type": "string",
-          "enum": [
-            "circle-doc-class"
-          ]
+          "const": "circle-doc-class"
         },
         {
           "description": "不完整的签名文档。",
           "type": "string",
-          "enum": [
-            "incomplete-signature-doc"
-          ]
+          "const": "incomplete-signature-doc"
         },
         {
           "description": "全局变量缺少文档。",
           "type": "string",
-          "enum": [
-            "missing-global-doc"
-          ]
+          "const": "missing-global-doc"
         },
         {
           "description": "赋值类型不匹配。",
           "type": "string",
-          "enum": [
-            "assign-type-mismatch"
-          ]
+          "const": "assign-type-mismatch"
         },
         {
           "description": "重复的 require 导入。",
           "type": "string",
-          "enum": [
-            "duplicate-require"
-          ]
+          "const": "duplicate-require"
         },
         {
           "description": "在 assert 中使用了非字面量表达式。",
           "type": "string",
-          "enum": [
-            "non-literal-expressions-in-assert"
-          ]
+          "const": "non-literal-expressions-in-assert"
         },
         {
           "description": "不平衡的赋值。",
           "type": "string",
-          "enum": [
-            "unbalanced-assignments"
-          ]
+          "const": "unbalanced-assignments"
         },
         {
           "description": "不必要的 assert。",
           "type": "string",
-          "enum": [
-            "unnecessary-assert"
-          ]
+          "const": "unnecessary-assert"
         },
         {
           "description": "不必要的 if。",
           "type": "string",
-          "enum": [
-            "unnecessary-if"
-          ]
+          "const": "unnecessary-if"
         },
         {
           "description": "重复定义的字段(实际代码)。",
           "type": "string",
-          "enum": [
-            "duplicate-set-field"
-          ]
+          "const": "duplicate-set-field"
         },
         {
           "description": "重复的索引。",
           "type": "string",
-          "enum": [
-            "duplicate-index"
-          ]
+          "const": "duplicate-index"
         },
         {
           "description": "泛型约束不匹配。",
           "type": "string",
-          "enum": [
-            "generic-constraint-mismatch"
-          ]
+          "const": "generic-constraint-mismatch"
         },
         {
           "description": "cast-type-mismatch",
           "type": "string",
-          "enum": [
-            "cast-type-mismatch"
-          ]
+          "const": "cast-type-mismatch"
+        },
+        {
+          "description": "require 模块不可见。",
+          "type": "string",
+          "const": "require-module-not-visible"
+        },
+        {
+          "description": "枚举值不匹配。",
+          "type": "string",
+          "const": "enum-value-mismatch"
         }
       ]
     },
@@ -538,30 +415,22 @@
         {
           "description": "诊断严重性: 错误。",
           "type": "string",
-          "enum": [
-            "error"
-          ]
+          "const": "error"
         },
         {
           "description": "诊断严重性: 警告。",
           "type": "string",
-          "enum": [
-            "warning"
-          ]
+          "const": "warning"
         },
         {
           "description": "诊断严重性: 信息。",
           "type": "string",
-          "enum": [
-            "information"
-          ]
+          "const": "information"
         },
         {
           "description": "诊断严重性: 提示。",
           "type": "string",
-          "enum": [
-            "hint"
-          ]
+          "const": "hint"
         }
       ]
     },
@@ -570,8 +439,8 @@
       "properties": {
         "insertSpace": {
           "description": "是否在 '---' 后插入空格。",
-          "default": false,
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -580,8 +449,8 @@
       "properties": {
         "enable": {
           "description": "是否启用代码透镜(Code Lens)。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -591,47 +460,43 @@
       "properties": {
         "autoRequire": {
           "description": "自动补全 require 语句。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "autoRequireFunction": {
           "description": "自动补全 require 语句时使用的函数名。",
-          "default": "require",
-          "type": "string"
+          "type": "string",
+          "default": "require"
         },
         "autoRequireNamingConvention": {
           "description": "自动补全 require 语句时使用的命名规范。",
-          "default": "keep",
-          "allOf": [
-            {
-              "$ref": "#/definitions/EmmyrcFilenameConvention"
-            }
-          ]
+          "$ref": "#/$defs/EmmyrcFilenameConvention",
+          "default": "keep"
         },
         "autoRequireSeparator": {
           "description": "自动补全 require 语句时使用的分隔符。",
-          "default": ".",
-          "type": "string"
+          "type": "string",
+          "default": "."
         },
         "baseFunctionIncludesName": {
           "description": "是否在基本函数补全中包含函数名。效果: `function () end` -> `function name() end`。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "callSnippet": {
           "description": "是否使用代码片段补全函数调用。",
-          "default": false,
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "enable": {
           "description": "是否启用代码补全。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "postfix": {
           "description": "后缀补全触发关键词。",
-          "default": "@",
-          "type": "string"
+          "type": "string",
+          "default": "@"
         }
       }
     },
@@ -650,47 +515,68 @@
         },
         "disable": {
           "description": "禁用的诊断代码列表。",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
-            "$ref": "#/definitions/DiagnosticCode"
+            "$ref": "#/$defs/DiagnosticCode"
           }
         },
         "enable": {
           "description": "是否启用诊断。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "enables": {
           "description": "启用的诊断代码列表。",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
-            "$ref": "#/definitions/DiagnosticCode"
+            "$ref": "#/$defs/DiagnosticCode"
           }
         },
         "globals": {
           "description": "全局变量列表，在该列表中的全局变量不会被诊断为未定义。",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "globalsRegex": {
           "description": "全局变量正则表达式列表，符合正则表达式的全局变量不会被诊断为未定义。",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "severity": {
           "description": "诊断代码与严重性设置的映射。",
-          "default": {},
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/DiagnosticSeveritySetting"
+            "$ref": "#/$defs/DiagnosticSeveritySetting"
+          },
+          "default": {}
+        }
+      }
+    },
+    "EmmyrcDoc": {
+      "type": "object",
+      "properties": {
+        "knownTags": {
+          "description": "已知文档标签列表。",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "privateName": {
+          "description": "将特定字段名视为私有，例如 `m_*` 表示 `XXX.m_id` 和 `XXX.m_type` 是私有字段，只能在定义所在的类中访问。",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -700,8 +586,8 @@
       "properties": {
         "enable": {
           "description": "是否启用文档颜色。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -710,37 +596,27 @@
         {
           "description": "保持原始文件名。",
           "type": "string",
-          "enum": [
-            "keep"
-          ]
+          "const": "keep"
         },
         {
           "description": "将文件名转换为蛇形(snake_case)命名。",
           "type": "string",
-          "enum": [
-            "snake-case"
-          ]
+          "const": "snake-case"
         },
         {
           "description": "将文件名转换为帕斯卡(PascalCase)命名。",
           "type": "string",
-          "enum": [
-            "pascal-case"
-          ]
+          "const": "pascal-case"
         },
         {
           "description": "将文件名转换为驼峰(camelCase)命名。",
           "type": "string",
-          "enum": [
-            "camel-case"
-          ]
+          "const": "camel-case"
         },
         {
-          "description": "When returning class definition, use class name, otherwise keep original name.",
+          "description": "返回类定义时，使用类名，否则保持原始名称。",
           "type": "string",
-          "enum": [
-            "keep-class"
-          ]
+          "const": "keep-class"
         }
       ]
     },
@@ -749,8 +625,8 @@
       "properties": {
         "enable": {
           "description": "是否启用悬浮提示。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -759,33 +635,38 @@
       "properties": {
         "enable": {
           "description": "是否启用内联提示。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
+        },
+        "enumParamHint": {
+          "description": "是否启用枚举参数提示。",
+          "type": "boolean",
+          "default": false
         },
         "indexHint": {
           "description": "在索引表达式跨行时，显示提示。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "localHint": {
           "description": "是否启用局部变量提示。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "metaCallHint": {
           "description": "是否启用 `__call` 调用提示。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "overrideHint": {
           "description": "是否启用重写提示。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "paramHint": {
           "description": "是否启用参数提示。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -794,8 +675,8 @@
       "properties": {
         "enable": {
           "description": "是否启用内联值。用于在调试断点时显示变量值。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -804,51 +685,37 @@
         {
           "description": "Lua 5.1",
           "type": "string",
-          "enum": [
-            "Lua5.1"
-          ]
+          "const": "Lua5.1"
         },
         {
           "description": "LuaJIT",
           "type": "string",
-          "enum": [
-            "LuaJIT"
-          ]
+          "const": "LuaJIT"
         },
         {
           "description": "Lua 5.2",
           "type": "string",
-          "enum": [
-            "Lua5.2"
-          ]
+          "const": "Lua5.2"
         },
         {
           "description": "Lua 5.3",
           "type": "string",
-          "enum": [
-            "Lua5.3"
-          ]
+          "const": "Lua5.3"
         },
         {
           "description": "Lua 5.4",
           "type": "string",
-          "enum": [
-            "Lua5.4"
-          ]
+          "const": "Lua5.4"
         },
         {
           "description": "Lua 5.5",
           "type": "string",
-          "enum": [
-            "Lua5.5"
-          ]
+          "const": "Lua5.5"
         },
         {
-          "description": "最新版本的 Lua。",
+          "description": "Lua Latest",
           "type": "string",
-          "enum": [
-            "LuaLatest"
-          ]
+          "const": "LuaLatest"
         }
       ]
     },
@@ -857,18 +724,18 @@
       "properties": {
         "enable": {
           "description": "是否启用引用搜索。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "fuzzySearch": {
           "description": "是否启用模糊搜索。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "shortStringSearch": {
           "description": "缓存短字符串用于搜索。",
-          "default": false,
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -876,8 +743,8 @@
       "type": "object",
       "properties": {
         "paths": {
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
@@ -889,57 +756,49 @@
       "properties": {
         "classDefaultCall": {
           "description": "类默认重载函数。",
+          "$ref": "#/$defs/ClassDefaultCall",
           "default": {
             "forceNonColon": false,
             "forceReturnSelf": false,
             "functionName": ""
-          },
-          "allOf": [
-            {
-              "$ref": "#/definitions/ClassDefaultCall"
-            }
-          ]
+          }
         },
         "extensions": {
           "description": "文件扩展名。例如：.lua, .lua.txt",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "frameworkVersions": {
           "description": "框架版本列表。",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "requireLikeFunction": {
           "description": "类似 require 的函数列表。",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "requirePattern": {
           "description": "require 模式。例如：\"?.lua\", \"?/init.lua\"",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "version": {
           "description": "Lua 版本。",
-          "default": "LuaLatest",
-          "allOf": [
-            {
-              "$ref": "#/definitions/EmmyrcLuaVersion"
-            }
-          ]
+          "$ref": "#/$defs/EmmyrcLuaVersion",
+          "default": "LuaLatest"
         }
       }
     },
@@ -948,8 +807,8 @@
       "properties": {
         "enable": {
           "description": "是否启用语义标记。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -958,8 +817,8 @@
       "properties": {
         "detailSignatureHelper": {
           "description": "是否启用签名帮助。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -968,27 +827,27 @@
       "properties": {
         "arrayIndex": {
           "description": "是否启用严格模式数组索引，严格模式下数组取值返回将包含 nil。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "docBaseConstMatchBaseType": {
           "description": "doc定义的基础常量类型可以匹配基础类型，使 int 可以匹配 `---@alias id 1|2|3`，string 同理。",
-          "default": false,
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "metaOverrideFileDefine": {
           "description": "`---@meta`文件的定义完全覆盖真实文件的定义。",
-          "default": true,
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "requirePath": {
           "description": "是否启用严格模式 require 路径。严格模式时 require 必须从指定的根目录开始。",
-          "default": false,
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "typeCall": {
-          "default": false,
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -997,62 +856,62 @@
       "properties": {
         "enableReindex": {
           "description": "启用重新索引。",
-          "default": false,
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "encoding": {
           "description": "编码。例如：\"utf-8\"",
-          "default": "utf-8",
-          "type": "string"
+          "type": "string",
+          "default": "utf-8"
         },
         "ignoreDir": {
           "description": "忽略的目录。",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "ignoreGlobs": {
           "description": "忽略的文件。例如：[\"**/*.lua\"]",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "library": {
           "description": "库路径。例如：\"/usr/local/share/lua/5.1\"",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
         },
         "moduleMap": {
-          "description": "模块映射列表。key 是正则表达式，value 是新的模块正则表达式。例如：{ \"^(.*)$\": \"module_$1\" \"^lib(.*)$\": \"script$1\" }",
-          "default": [],
+          "description": "模块映射列表。key 是正则表达式，value 是新的模块正则表达式\n 例如：{\n    \"^(.*)$\": \"module_$1\"\n    \"^lib(.*)$\": \"script$1\"\n}",
           "type": "array",
+          "default": [],
           "items": {
-            "$ref": "#/definitions/EmmyrcWorkspaceModuleMap"
+            "$ref": "#/$defs/EmmyrcWorkspaceModuleMap"
           }
         },
         "preloadFileSize": {
-          "default": 0,
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "default": 0
         },
         "reindexDuration": {
           "description": "当保存文件时，ls 将在指定毫秒后重新索引工作区。",
-          "default": 5000,
           "type": "integer",
           "format": "uint64",
+          "default": 5000,
           "minimum": 0
         },
         "workspaceRoots": {
           "description": "工作区根目录列表。例如：[\"src\", \"test\"]",
-          "default": [],
           "type": "array",
+          "default": [],
           "items": {
             "type": "string"
           }
@@ -1061,10 +920,6 @@
     },
     "EmmyrcWorkspaceModuleMap": {
       "type": "object",
-      "required": [
-        "pattern",
-        "replace"
-      ],
       "properties": {
         "pattern": {
           "type": "string"
@@ -1072,7 +927,11 @@
         "replace": {
           "type": "string"
         }
-      }
+      },
+      "required": [
+        "pattern",
+        "replace"
+      ]
     }
   }
 }

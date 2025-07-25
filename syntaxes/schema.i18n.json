@@ -70,6 +70,10 @@
     "en": "Duplicate type",
     "zh-CN": "重复定义的类型。"
   },
+  "DiagnosticCode.enum-value-mismatch": {
+    "en": "enum-value-mismatch",
+    "zh-CN": "枚举值不匹配。"
+  },
   "DiagnosticCode.generic-constraint-mismatch": {
     "en": "generic-constraint-mismatch",
     "zh-CN": "泛型约束不匹配。"
@@ -138,6 +142,10 @@
     "en": "Redundant return value",
     "zh-CN": "冗余的返回值。"
   },
+  "DiagnosticCode.require-module-not-visible": {
+    "en": "require-module-not-visible",
+    "zh-CN": "require 模块不可见。"
+  },
   "DiagnosticCode.return-type-mismatch": {
     "en": "Return type mismatch",
     "zh-CN": "返回类型不匹配。"
@@ -165,6 +173,10 @@
   "DiagnosticCode.undefined-global": {
     "en": "Undefined global",
     "zh-CN": "未定义的全局变量。"
+  },
+  "DiagnosticCode.unknown-doc-tag": {
+    "en": "Unknown doc annotation",
+    "zh-CN": "未知文档注解。"
   },
   "DiagnosticCode.unnecessary-assert": {
     "en": "unnecessary-assert",
@@ -274,6 +286,14 @@
     "en": "A map of diagnostic codes to their severity settings.",
     "zh-CN": "诊断代码与严重性设置的映射。"
   },
+  "EmmyrcDoc.knownTags": {
+    "en": "List of known documentation tags.",
+    "zh-CN": "已知文档标签列表。"
+  },
+  "EmmyrcDoc.privateName": {
+    "en": "Treat specific field names as private, e.g. `m_*` means `XXX.m_id` and `XXX.m_type` are private, witch can only be accessed in the class where the definition is located.",
+    "zh-CN": "将特定字段名视为私有，例如 `m_*` 表示 `XXX.m_id` 和 `XXX.m_type` 是私有字段，只能在定义所在的类中访问。"
+  },
   "EmmyrcDocumentColor.enable": {
     "en": "Whether to enable document color.",
     "zh-CN": "是否启用文档颜色。"
@@ -288,7 +308,7 @@
   },
   "EmmyrcFilenameConvention.keep-class": {
     "en": "When returning class definition, use class name, otherwise keep original name.",
-    "zh-CN": "当返回类定义时，使用类名，否则保持原始名称。"
+    "zh-CN": "返回类定义时，使用类名，否则保持原始名称。"
   },
   "EmmyrcFilenameConvention.pascal-case": {
     "en": "Convert the filename to PascalCase.",
@@ -306,12 +326,16 @@
     "en": "Whether to enable inlay hints.",
     "zh-CN": "是否启用内联提示。"
   },
+  "EmmyrcInlayHint.enumParamHint": {
+    "en": "Whether to enable enum parameter hints.",
+    "zh-CN": "是否启用枚举参数提示。"
+  },
   "EmmyrcInlayHint.indexHint": {
     "en": "Whether to enable index hints.",
     "zh-CN": "在索引表达式跨行时，显示提示。"
   },
   "EmmyrcInlayHint.localHint": {
-    "en": "Whether to enable local hints. Whether to enable override hints.",
+    "en": "Whether to enable local hints.\nWhether to enable override hints.",
     "zh-CN": "是否启用局部变量提示。"
   },
   "EmmyrcInlayHint.metaCallHint": {
@@ -349,8 +373,7 @@
     "en": "LuaJIT"
   },
   "EmmyrcLuaVersion.LuaLatest": {
-    "en": "Lua Latest",
-    "zh-CN": "最新版本的 Lua。"
+    "en": "Lua Latest"
   },
   "EmmyrcReference.enable": {
     "en": "Whether to enable reference search.",
@@ -433,8 +456,8 @@
     "zh-CN": "库路径。例如：\"/usr/local/share/lua/5.1\""
   },
   "EmmyrcWorkspace.moduleMap": {
-    "en": "Module map. key is regex, value is new module regex eg: { \"^(.*)$\": \"module_$1\" \"^lib(.*)$\": \"script$1\" }",
-    "zh-CN": "模块映射列表。key 是正则表达式，value 是新的模块正则表达式。例如：{ \"^(.*)$\": \"module_$1\" \"^lib(.*)$\": \"script$1\" }"
+    "en": "Module map. key is regex, value is new module regex\neg: {\n    \"^(.*)$\": \"module_$1\"\n    \"^lib(.*)$\": \"script$1\"\n}",
+    "zh-CN": "模块映射列表。key 是正则表达式，value 是新的模块正则表达式\n 例如：{\n    \"^(.*)$\": \"module_$1\"\n    \"^lib(.*)$\": \"script$1\"\n}"
   },
   "EmmyrcWorkspace.reindexDuration": {
     "en": "when save a file, ls will reindex the workspace after reindex_duration milliseconds.",
