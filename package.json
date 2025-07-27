@@ -2,7 +2,7 @@
     "displayName": "emmylua-luals",
     "name": "emmylua-luals",
     "description": "EmmyLua with LuaLS-oriented behavior",
-    "version": "0.9.25",
+    "version": "0.9.26",
     "icon": "res/icon.png",
     "publisher": "xuhuanzy",
     "engines": {
