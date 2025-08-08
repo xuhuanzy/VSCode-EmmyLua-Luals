@@ -1,6 +1,28 @@
 const fs = require('fs');
 const path = require('path');
 
+function buildCleanPath(currentPath, currentObj) {
+    if (typeof currentPath !== 'string') {
+        return '';
+    }
+
+    let cleanPath = currentPath
+        .replace(/\.properties\./g, '.')
+        .replace(/\.oneOf\.\d+/g, '')
+        .replace(/\.allOf\.\d+/g, '')
+        .replace(/\.items/g, '')
+        .replace(/\.additionalProperties/g, '')
+        .replace(/^\.|\.$/g, '')
+        .replace(/\.$/, '');
+
+    if (currentPath.includes('.oneOf.') && currentObj && Object.prototype.hasOwnProperty.call(currentObj, 'const')) {
+        const enumValue = currentObj.const;
+        cleanPath = cleanPath + '.' + enumValue;
+    }
+
+    return cleanPath;
+}
+
 function extractDescriptions(obj, currentPath = '', result = {}) {
     if (typeof obj !== 'object' || obj === null) {
         return result;
@@ -9,20 +31,7 @@ function extractDescriptions(obj, currentPath = '', result = {}) {
     for (const [key, value] of Object.entries(obj)) {
         if (key === 'description' && typeof value === 'string') {
             // 生成简化的路径，忽略 properties、oneOf、allOf 等中间路径
-            let cleanPath = currentPath
-                .replace(/\.properties\./g, '.')
-                .replace(/\.oneOf\.\d+/g, '')
-                .replace(/\.allOf\.\d+/g, '')
-                .replace(/\.items/g, '')
-                .replace(/\.additionalProperties/g, '')
-                .replace(/^\.|\.$/g, '') // 移除开头和结尾的点
-                .replace(/\.$/, ''); // 移除结尾的点
-
-            // 如果是在 oneOf 中的枚举值，需要特殊处理
-            if (currentPath.includes('.oneOf.') && obj.const) {
-                const enumValue = obj.const; // 取第一个枚举值作为标识
-                cleanPath = cleanPath + '.' + enumValue;
-            }
+            const cleanPath = buildCleanPath(currentPath, obj);
 
             if (cleanPath) {
                 result[cleanPath] = {
@@ -67,20 +76,7 @@ function translateDescriptions(obj, i18nData, currentPath = '') {
     for (const [key, value] of Object.entries(obj)) {
         if (key === 'description' && typeof value === 'string') {
             // 生成简化的路径来查找翻译
-            let cleanPath = currentPath
-                .replace(/\.properties\./g, '.')
-                .replace(/\.oneOf\.\d+/g, '')
-                .replace(/\.allOf\.\d+/g, '')
-                .replace(/\.items/g, '')
-                .replace(/\.additionalProperties/g, '')
-                .replace(/^\.|\.$/g, '')
-                .replace(/\.$/, '');
-
-            // 如果是在 oneOf 中的枚举值，需要特殊处理
-            if (currentPath.includes('.oneOf.') && obj.const) {
-                const enumValue = obj.const;
-                cleanPath = cleanPath + '.' + enumValue;
-            }
+            const cleanPath = buildCleanPath(currentPath, obj);
 
             // 查找中文翻译
             if (cleanPath && i18nData[cleanPath] && i18nData[cleanPath]['zh-CN']) {

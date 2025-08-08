@@ -154,7 +154,7 @@
       "type": "object",
       "properties": {
         "forceNonColon": {
-          "description": "强制非冒号定义。当 `function_name` 不为空时，生效。",
+          "description": "强制非冒号定义。当 `function_name` 不为空时生效。",
           "type": "boolean",
           "default": true
         },

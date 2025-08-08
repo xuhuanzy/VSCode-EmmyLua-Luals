@@ -1,7 +1,7 @@
 {
   "ClassDefaultCall.forceNonColon": {
     "en": "Mandatory non`:` definition. When `function_name` is not empty, it takes effect.",
-    "zh-CN": "强制非冒号定义。当 `function_name` 不为空时，生效。"
+    "zh-CN": "强制非冒号定义。当 `function_name` 不为空时生效。"
   },
   "ClassDefaultCall.forceReturnSelf": {
     "en": "Force to return `self`.",
