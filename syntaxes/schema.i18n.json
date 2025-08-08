@@ -211,19 +211,18 @@
     "zh-CN": "诊断严重性: 警告。"
   },
   "EmmyrcCodeAction.insertSpace": {
-    "en": "Whether to insert space after '---'",
+    "en": "Add space after `---` comments when inserting `@diagnostic disable-next-line`.",
     "zh-CN": "是否在 '---' 后插入空格。"
   },
-  "EmmyrcCodeLen.enable": {
-    "en": "Whether to enable code lens.",
-    "zh-CN": "是否启用代码透镜(Code Lens)。"
+  "EmmyrcCodeLens.enable": {
+    "en": "Enable code lens."
   },
   "EmmyrcCompletion": {
     "en": "Configuration for EmmyLua code completion.",
     "zh-CN": "EmmyLua 代码补全配置。"
   },
   "EmmyrcCompletion.autoRequire": {
-    "en": "Whether to automatically require modules.",
+    "en": "Automatically insert call to `require` when autocompletion\ninserts objects from other modules.",
     "zh-CN": "自动补全 require 语句。"
   },
   "EmmyrcCompletion.autoRequireFunction": {
@@ -239,7 +238,7 @@
     "zh-CN": "自动补全 require 语句时使用的分隔符。"
   },
   "EmmyrcCompletion.baseFunctionIncludesName": {
-    "en": "Whether to include the name in the base function completion. effect: `function () end` -> `function name() end`.",
+    "en": "Whether to include the name in the base function completion. Effect: `function () end` -> `function name() end`.",
     "zh-CN": "是否在基本函数补全中包含函数名。效果: `function () end` -> `function name() end`。"
   },
   "EmmyrcCompletion.callSnippet": {
@@ -247,11 +246,11 @@
     "zh-CN": "是否使用代码片段补全函数调用。"
   },
   "EmmyrcCompletion.enable": {
-    "en": "Whether to enable code completion.",
+    "en": "Enable autocompletion.",
     "zh-CN": "是否启用代码补全。"
   },
   "EmmyrcCompletion.postfix": {
-    "en": "The postfix trigger used in completions.",
+    "en": "Symbol that's used to trigger postfix autocompletion.",
     "zh-CN": "后缀补全触发关键词。"
   },
   "EmmyrcDiagnostic": {
@@ -259,7 +258,7 @@
     "zh-CN": "Emmyrc 诊断配置。"
   },
   "EmmyrcDiagnostic.diagnosticInterval": {
-    "en": "The interval in milliseconds to perform diagnostics.",
+    "en": "Delay between opening/changing a file and scanning it for errors, in milliseconds.",
     "zh-CN": "诊断间隔时间(毫秒)。"
   },
   "EmmyrcDiagnostic.disable": {
@@ -295,7 +294,7 @@
     "zh-CN": "将特定字段名视为私有，例如 `m_*` 表示 `XXX.m_id` 和 `XXX.m_type` 是私有字段，只能在定义所在的类中访问。"
   },
   "EmmyrcDocumentColor.enable": {
-    "en": "Whether to enable document color.",
+    "en": "Enable parsing strings for color tags and showing a color picker next to them.",
     "zh-CN": "是否启用文档颜色。"
   },
   "EmmyrcFilenameConvention.camel-case": {
@@ -319,39 +318,39 @@
     "zh-CN": "将文件名转换为蛇形(snake_case)命名。"
   },
   "EmmyrcHover.enable": {
-    "en": "Whether to enable hover.",
+    "en": "Enable showing documentation on hover.",
     "zh-CN": "是否启用悬浮提示。"
   },
   "EmmyrcInlayHint.enable": {
-    "en": "Whether to enable inlay hints.",
+    "en": "Enable inlay hints.",
     "zh-CN": "是否启用内联提示。"
   },
   "EmmyrcInlayHint.enumParamHint": {
-    "en": "Whether to enable enum parameter hints.",
+    "en": "Show name of enumerator when passing a literal value to a function\nthat expects an enum.\n\nExample:\n\n```lua\n--- @enum Level\nlocal Foo = {\n   Info = 1,\n   Error = 2,\n}\n\n--- @param l Level\nfunction print_level(l) end\n\nprint_level(1 --[[ Hint: Level.Info ]])\n```",
     "zh-CN": "是否启用枚举参数提示。"
   },
   "EmmyrcInlayHint.indexHint": {
-    "en": "Whether to enable index hints.",
+    "en": "Show named array indexes.\n\nExample:\n\n```lua\nlocal array = {\n   [1] = 1, -- [name]\n}\n\nprint(array[1] --[[ Hint: name ]])\n```",
     "zh-CN": "在索引表达式跨行时，显示提示。"
   },
   "EmmyrcInlayHint.localHint": {
-    "en": "Whether to enable local hints.\nWhether to enable override hints.",
+    "en": "Show types of local variables.",
     "zh-CN": "是否启用局部变量提示。"
   },
   "EmmyrcInlayHint.metaCallHint": {
-    "en": "Whether to enable meta __call operator hints.",
+    "en": "Show hint when calling an object results in a call to\nits meta table's `__call` function.",
     "zh-CN": "是否启用 `__call` 调用提示。"
   },
   "EmmyrcInlayHint.overrideHint": {
-    "en": "Whether to enable override hints.",
+    "en": "Show methods that override functions from base class.",
     "zh-CN": "是否启用重写提示。"
   },
   "EmmyrcInlayHint.paramHint": {
-    "en": "Whether to enable parameter hints.",
+    "en": "Show parameter names in function calls and parameter types in function definitions.",
     "zh-CN": "是否启用参数提示。"
   },
   "EmmyrcInlineValues.enable": {
-    "en": "Whether to enable inline values.",
+    "en": "Show inline values during debug.",
     "zh-CN": "是否启用内联值。用于在调试断点时显示变量值。"
   },
   "EmmyrcLuaVersion.Lua5.1": {
@@ -376,15 +375,15 @@
     "en": "Lua Latest"
   },
   "EmmyrcReference.enable": {
-    "en": "Whether to enable reference search.",
+    "en": "Enable searching for symbol usages.",
     "zh-CN": "是否启用引用搜索。"
   },
   "EmmyrcReference.fuzzySearch": {
-    "en": "Determines whether to enable fuzzy searching for fields where references cannot be found.",
+    "en": "Use fuzzy search when searching for symbol usages\nand normal search didn't find anything.",
     "zh-CN": "是否启用模糊搜索。"
   },
   "EmmyrcReference.shortStringSearch": {
-    "en": "Cache Short string for search",
+    "en": "Also search for usages in strings.",
     "zh-CN": "缓存短字符串用于搜索。"
   },
   "EmmyrcRuntime.classDefaultCall": {
@@ -412,7 +411,7 @@
     "zh-CN": "Lua 版本。"
   },
   "EmmyrcSemanticToken.enable": {
-    "en": "Whether to enable semantic token.",
+    "en": "Enable semantic tokens.",
     "zh-CN": "是否启用语义标记。"
   },
   "EmmyrcSignature.detailSignatureHelper": {
@@ -436,7 +435,7 @@
     "zh-CN": "是否启用严格模式 require 路径。严格模式时 require 必须从指定的根目录开始。"
   },
   "EmmyrcWorkspace.enableReindex": {
-    "en": "Enable reindex.",
+    "en": "Enable full project reindex after changing a file.",
     "zh-CN": "启用重新索引。"
   },
   "EmmyrcWorkspace.encoding": {
@@ -460,7 +459,7 @@
     "zh-CN": "模块映射列表。key 是正则表达式，value 是新的模块正则表达式\n 例如：{\n    \"^(.*)$\": \"module_$1\"\n    \"^lib(.*)$\": \"script$1\"\n}"
   },
   "EmmyrcWorkspace.reindexDuration": {
-    "en": "when save a file, ls will reindex the workspace after reindex_duration milliseconds.",
+    "en": "Delay between changing a file and full project reindex, in milliseconds.",
     "zh-CN": "当保存文件时，ls 将在指定毫秒后重新索引工作区。"
   },
   "EmmyrcWorkspace.workspaceRoots": {

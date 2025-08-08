@@ -16,7 +16,7 @@
       }
     },
     "codeLens": {
-      "$ref": "#/$defs/EmmyrcCodeLen",
+      "$ref": "#/$defs/EmmyrcCodeLens",
       "default": {
         "enable": true
       }
@@ -440,17 +440,19 @@
         "insertSpace": {
           "description": "是否在 '---' 后插入空格。",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "x-vscode-setting": true
         }
       }
     },
-    "EmmyrcCodeLen": {
+    "EmmyrcCodeLens": {
       "type": "object",
       "properties": {
         "enable": {
-          "description": "是否启用代码透镜(Code Lens)。",
+          "description": "Enable code lens.",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         }
       }
     },
@@ -461,7 +463,8 @@
         "autoRequire": {
           "description": "自动补全 require 语句。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "autoRequireFunction": {
           "description": "自动补全 require 语句时使用的函数名。",
@@ -481,7 +484,8 @@
         "baseFunctionIncludesName": {
           "description": "是否在基本函数补全中包含函数名。效果: `function () end` -> `function name() end`。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "callSnippet": {
           "description": "是否使用代码片段补全函数调用。",
@@ -491,12 +495,32 @@
         "enable": {
           "description": "是否启用代码补全。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "postfix": {
           "description": "后缀补全触发关键词。",
           "type": "string",
-          "default": "@"
+          "default": "@",
+          "x-vscode-setting": {
+            "default": null,
+            "enum": [
+              null,
+              "@",
+              ".",
+              ":"
+            ],
+            "enumItemLabels": [
+              "Default"
+            ],
+            "markdownEnumDescriptions": [
+              "%config.common.enum.default.description%"
+            ],
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
@@ -511,7 +535,8 @@
             "null"
           ],
           "format": "uint64",
-          "minimum": 0
+          "minimum": 0,
+          "x-vscode-setting": true
         },
         "disable": {
           "description": "禁用的诊断代码列表。",
@@ -587,7 +612,8 @@
         "enable": {
           "description": "是否启用文档颜色。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         }
       }
     },
@@ -626,7 +652,8 @@
         "enable": {
           "description": "是否启用悬浮提示。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         }
       }
     },
@@ -636,37 +663,44 @@
         "enable": {
           "description": "是否启用内联提示。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "enumParamHint": {
           "description": "是否启用枚举参数提示。",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "x-vscode-setting": true
         },
         "indexHint": {
           "description": "在索引表达式跨行时，显示提示。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "localHint": {
           "description": "是否启用局部变量提示。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "metaCallHint": {
           "description": "是否启用 `__call` 调用提示。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "overrideHint": {
           "description": "是否启用重写提示。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "paramHint": {
           "description": "是否启用参数提示。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         }
       }
     },
@@ -676,7 +710,8 @@
         "enable": {
           "description": "是否启用内联值。用于在调试断点时显示变量值。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         }
       }
     },
@@ -725,17 +760,20 @@
         "enable": {
           "description": "是否启用引用搜索。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "fuzzySearch": {
           "description": "是否启用模糊搜索。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         },
         "shortStringSearch": {
           "description": "缓存短字符串用于搜索。",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "x-vscode-setting": true
         }
       }
     },
@@ -808,7 +846,8 @@
         "enable": {
           "description": "是否启用语义标记。",
           "type": "boolean",
-          "default": true
+          "default": true,
+          "x-vscode-setting": true
         }
       }
     },
@@ -857,7 +896,8 @@
         "enableReindex": {
           "description": "启用重新索引。",
           "type": "boolean",
-          "default": false
+          "default": false,
+          "x-vscode-setting": true
         },
         "encoding": {
           "description": "编码。例如：\"utf-8\"",
@@ -906,7 +946,8 @@
           "type": "integer",
           "format": "uint64",
           "default": 5000,
-          "minimum": 0
+          "minimum": 0,
+          "x-vscode-setting": true
         },
         "workspaceRoots": {
           "description": "工作区根目录列表。例如：[\"src\", \"test\"]",

@@ -1,64 +1,89 @@
-'use strict';
-
 import * as vscode from 'vscode';
-import * as path from "path";
-import * as net from "net";
-import * as process from "process";
-
-import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from "vscode-languageclient/node";
-import { LuaLanguageConfiguration } from './languageConfiguration';
-import { EmmyContext } from './emmyContext';
+import * as path from 'path';
+import * as net from 'net';
+import * as process from 'process';
 import * as os from 'os';
 import * as fs from 'fs';
-import { IServerLocation, IServerPosition } from './lspExt';
 
-export let ctx: EmmyContext;
+import { integer, LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from 'vscode-languageclient/node';
+import { LuaLanguageConfiguration } from './languageConfiguration';
+import { EmmyContext } from './emmyContext';
+import { IServerLocation, IServerPosition } from './lspExtension';
+import { get } from './configRenames';
+import { LuaRocksManager } from './luarocks/LuaRocksManager';
+import { LuaRocksTreeProvider, PackageTreeItem } from './luarocks/LuaRocksTreeProvider';
+import { EmmyrcSchemaContentProvider } from './emmyrcSchemaContentProvider';
 
-export function activate(context: vscode.ExtensionContext) {
-    console.log("emmy lua actived!");
+// Global state
+export let extensionContext: EmmyContext;
+let luaRocksManager: LuaRocksManager | undefined;
+let luaRocksTreeProvider: LuaRocksTreeProvider | undefined;
 
-    // 注册动态JSON验证
-    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('emmyrc-schema', new EmmyrcSchemaContentProvider(context)));
+export async function activate(context: vscode.ExtensionContext) {
+    console.log('EmmyLua extension activated!');
 
-    ctx = new EmmyContext(
-        process.env['EMMY_DEV'] === "true",
+    // 提供`.emmyrc.json`的 i18n
+    context.subscriptions.push(
+        vscode.workspace.registerTextDocumentContentProvider('emmyrc-schema', new EmmyrcSchemaContentProvider(context))
+    );
+
+    extensionContext = new EmmyContext(
+        process.env['EMMY_DEV'] === 'true',
         context
     );
 
-    context.subscriptions.push(vscode.commands.registerCommand("emmy.stopServer", stopServer));
-    context.subscriptions.push(vscode.commands.registerCommand("emmy.restartServer", restartServer));
-    context.subscriptions.push(vscode.commands.registerCommand("emmy.showReferences", showReferences));
-    context.subscriptions.push(vscode.languages.setLanguageConfiguration("lua", new LuaLanguageConfiguration()));
-    startServer();
-    return {
-        reportAPIDoc: (classDoc: any) => {
-            ctx?.client?.sendRequest("emmy/reportAPI", classDoc);
-        }
+    // Register commands
+    const commands = [
+        vscode.commands.registerCommand('emmy.stopServer', stopServer),
+        vscode.commands.registerCommand('emmy.restartServer', restartServer),
+        vscode.commands.registerCommand('emmy.showReferences', showReferences),
+        // LuaRocks commands
+        vscode.commands.registerCommand('emmylua.luarocks.searchPackages', searchPackages),
+        vscode.commands.registerCommand('emmylua.luarocks.installPackage', installPackage),
+        vscode.commands.registerCommand('emmylua.luarocks.uninstallPackage', uninstallPackage),
+        vscode.commands.registerCommand('emmylua.luarocks.showPackageInfo', showPackageInfo),
+        vscode.commands.registerCommand('emmylua.luarocks.refreshPackages', refreshPackages),
+        vscode.commands.registerCommand('emmylua.luarocks.showPackages', showPackagesView),
+        vscode.commands.registerCommand('emmylua.luarocks.clearSearch', clearSearch),
+        vscode.commands.registerCommand('emmylua.luarocks.checkInstallation', checkLuaRocksInstallation),
+    ];
+
+
+    // Register language configuration
+    const languageConfig = vscode.languages.setLanguageConfiguration('lua', new LuaLanguageConfiguration());
+
+    // Add all subscriptions
+    context.subscriptions.push(
+        ...commands,
+        languageConfig,
+        extensionContext
+    );
+
+    // Initialize
+    await startServer();
+    await initializeLuaRocks();
+}
+
+export function deactivate(): void {
+    extensionContext?.dispose();
+}
+
+async function startServer(): Promise<void> {
+    try {
+        await doStartServer();
+    } catch (reason) {
+        extensionContext.setServerStatus({
+            health: 'error',
+            message: `Failed to start "EmmyLua" language server!\n${reason}`,
+            command: 'emmy.restartServer'
+        });
     }
 }
 
-export function deactivate() {
-    ctx.dispose();
-}
-
-
-
-
-async function startServer() {
-    doStartServer().then(() => {
-    }).catch(reason => {
-        ctx.setServerStatus({
-            health: "error",
-            message: `Failed to start "EmmyLua" language server!\n${reason}`,
-            command: "emmy.restartServer"
-        })
-    });
-}
-
-async function doStartServer() {
-    const context = ctx.extensionContext;
+async function doStartServer(): Promise<void> {
+    const context = extensionContext.vscodeContext;
     const clientOptions: LanguageClientOptions = {
-        documentSelector: [{ scheme: 'file', language: ctx.LANGUAGE_ID }],
+        documentSelector: [{ scheme: 'file', language: extensionContext.LANGUAGE_ID }],
         initializationOptions: {},
         markdown: {
             isTrusted: true,
@@ -67,10 +92,15 @@ async function doStartServer() {
     };
 
     let serverOptions: ServerOptions;
-    if (ctx.debugMode) {
+    const config = vscode.workspace.getConfiguration(
+        undefined,
+        vscode.workspace.workspaceFolders?.[0]
+    );
+    const debugPort = config.get<integer | null>("emmylua.ls.debugPort");
+    if (debugPort || extensionContext.debugMode) {
         // The server is a started as a separate app and listens on port 5007
         const connectionInfo = {
-            port: 5007
+            port: debugPort || 5007,
         };
         serverOptions = () => {
             // Connect to language server via socket
@@ -85,11 +115,7 @@ async function doStartServer() {
             return Promise.resolve(result);
         };
     } else {
-        const config = vscode.workspace.getConfiguration(
-            undefined,
-            vscode.workspace.workspaceFolders?.[0]
-        );
-        let configExecutablePath = config.get<string>("emmylua.misc.executablePath")?.trim();
+        let configExecutablePath = get<string>(config, "emmylua.ls.executablePath")?.trim();
         if (!configExecutablePath || configExecutablePath.length == 0) {
             let platform = os.platform();
             let executableName = platform === 'win32' ? 'emmylua_ls.exe' : 'emmylua_ls';
@@ -111,7 +137,7 @@ async function doStartServer() {
             serverOptions.args = parameters;
         }
 
-        let globalConfigPath = config.get<string>("emmylua.misc.globalConfigPath")?.trim();
+        let globalConfigPath = get<string>(config, "emmylua.ls.globalConfigPath")?.trim();
         if (globalConfigPath && globalConfigPath.length > 0) {
             if (!serverOptions.options || !serverOptions.options.env) {
                 serverOptions.options = { env: {} }
@@ -120,19 +146,23 @@ async function doStartServer() {
         }
     }
 
-    ctx.client = new LanguageClient(ctx.LANGUAGE_ID, "EmmyLua plugin for vscode.", serverOptions, clientOptions);
-    ctx.registerProtocol();
-    ctx.client.start().then(() => {
-        console.log("client ready");
-    })
+    extensionContext.client = new LanguageClient(
+        extensionContext.LANGUAGE_ID,
+        'EmmyLua plugin for vscode.',
+        serverOptions,
+        clientOptions
+    );
+
+    await extensionContext.client.start();
+    console.log('EmmyLua client ready');
 }
 
-function restartServer() {
-    const client = ctx.client;
+function restartServer(): void {
+    const client = extensionContext.client;
     if (!client) {
         startServer();
     } else {
-        client.stop().then(startServer);
+        client.stop().then(() => startServer());
     }
 }
 
@@ -150,57 +180,271 @@ function showReferences(uri: string, pos: IServerPosition, locations: IServerLoc
 }
 
 function stopServer() {
-    ctx.stopServer();
+    extensionContext.stopServer();
 }
 
 
-/**
- * 用于动态提供 JSON Schema 内容。
- */
-class EmmyrcSchemaContentProvider implements vscode.TextDocumentContentProvider {
-    private readonly schemaBaseDir: string;
+// LuaRocks Integration Functions
 
-    constructor(context: vscode.ExtensionContext) {
-        this.schemaBaseDir = path.join(context.extensionPath, 'syntaxes');
+async function initializeLuaRocks(): Promise<void> {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+        return;
     }
 
-    async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
-        const schemaIdentifier = path.posix.basename(uri.path);
-        const locale = vscode.env.language;
-        let schemaFileName: string;
+    // Initialize LuaRocks manager
+    luaRocksManager = new LuaRocksManager(workspaceFolder);
+    luaRocksTreeProvider = new LuaRocksTreeProvider(luaRocksManager);
 
-        if (schemaIdentifier === 'emmyrc') {
-            switch (locale) {
-                case 'zh-cn':
-                case 'zh-CN':
-                case 'zh':
-                    schemaFileName = 'schema.zh-cn.json';
-                    break;
-                case 'en':
-                case 'en-US':
-                case 'en-GB':
-                default:
-                    schemaFileName = 'schema.json';
-                    break;
-            }
+    // Register tree view
+    const treeView = vscode.window.createTreeView('emmylua.luarocks', {
+        treeDataProvider: luaRocksTreeProvider,
+        showCollapseAll: true
+    });
+
+    extensionContext.vscodeContext.subscriptions.push(
+        treeView,
+        luaRocksManager,
+        luaRocksTreeProvider
+    );
+
+    // Check if LuaRocks is installed
+    const isInstalled = await luaRocksManager.checkLuaRocksInstallation();
+    if (isInstalled) {
+        // Auto-detect workspace type
+        const workspace = await luaRocksManager.detectLuaRocksWorkspace();
+        if (workspace.hasRockspec) {
+            vscode.window.showInformationMessage(`Found ${workspace.rockspecFiles.length} rockspec file(s) in workspace`);
+        }
+    }
+}
+
+async function searchPackages(): Promise<void> {
+    if (!luaRocksManager || !luaRocksTreeProvider) {
+        vscode.window.showErrorMessage('LuaRocks not initialized');
+        return;
+    }
+
+    const query = await vscode.window.showInputBox({
+        prompt: 'Enter package name or search term',
+        placeHolder: 'e.g., lpeg, luasocket, etc.'
+    });
+
+    if (!query) {
+        return;
+    }
+
+    try {
+        const packages = await luaRocksManager.searchPackages(query);
+        if (packages.length === 0) {
+            vscode.window.showInformationMessage(`No packages found for "${query}"`);
         } else {
-            return '';
+            luaRocksTreeProvider.setSearchResults(packages);
+            vscode.window.showInformationMessage(`Found ${packages.length} package(s) for "${query}"`);
+        }
+    } catch (error) {
+        vscode.window.showErrorMessage(`Search failed: ${error}`);
+    }
+}
+
+async function installPackage(item?: PackageTreeItem): Promise<void> {
+    if (!luaRocksManager || !luaRocksTreeProvider) {
+        vscode.window.showErrorMessage('LuaRocks not initialized');
+        return;
+    }
+
+    let packageName: string;
+    let packageVersion: string | undefined;
+
+    if (item && item.packageInfo) {
+        packageName = item.packageInfo.name;
+        packageVersion = item.packageInfo.version;
+    } else {
+        const input = await vscode.window.showInputBox({
+            prompt: 'Enter package name (optionally with version)',
+            placeHolder: 'e.g., lpeg or lpeg 1.0.2'
+        });
+
+        if (!input) {
+            return;
         }
 
-        // 检查schema文件是否存在，如果不存在则使用默认的
-        let schemaFilePath = path.join(this.schemaBaseDir, schemaFileName);
-        if (!fs.existsSync(schemaFilePath)) {
-            schemaFilePath = path.join(this.schemaBaseDir, 'schema.json');
-        }
+        const parts = input.trim().split(/\s+/);
+        packageName = parts[0];
+        packageVersion = parts[1];
+    }
 
-        try {
-            return await fs.promises.readFile(schemaFilePath, 'utf8');
-        } catch (error: any) {
-            return JSON.stringify({
-                "$schema": "http://json-schema.org/draft-07/schema#",
-                "title": "Error Loading Schema",
-                "description": `Could not load schema: ${schemaFileName}. Error: ${error.message}.`
-            });
+    const success = await luaRocksManager.installPackage(packageName, packageVersion);
+    if (success) {
+        luaRocksTreeProvider.refreshInstalled();
+    }
+}
+
+async function uninstallPackage(item: PackageTreeItem): Promise<void> {
+    if (!luaRocksManager || !luaRocksTreeProvider) {
+        vscode.window.showErrorMessage('LuaRocks not initialized');
+        return;
+    }
+
+    if (!item.packageInfo) {
+        vscode.window.showErrorMessage('No package selected');
+        return;
+    }
+
+    const packageName = item.packageInfo.name;
+    const confirm = await vscode.window.showWarningMessage(
+        `Are you sure you want to uninstall "${packageName}"?`,
+        'Yes',
+        'No'
+    );
+
+    if (confirm === 'Yes') {
+        const success = await luaRocksManager.uninstallPackage(packageName);
+        if (success) {
+            luaRocksTreeProvider.refreshInstalled();
+        }
+    }
+}
+
+async function showPackageInfo(item: PackageTreeItem): Promise<void> {
+    if (!luaRocksManager) {
+        vscode.window.showErrorMessage('LuaRocks not initialized');
+        return;
+    }
+
+    if (!item.packageInfo) {
+        vscode.window.showErrorMessage('No package selected');
+        return;
+    }
+
+    const packageInfo = await luaRocksManager.getPackageInfo(item.packageInfo.name);
+    if (!packageInfo) {
+        vscode.window.showErrorMessage('Failed to get package information');
+        return;
+    }
+
+    // 使用QuickPick显示包信息，这样不会影响树视图
+    const quickPick = vscode.window.createQuickPick();
+    quickPick.title = `Package: ${packageInfo.name}`;
+    quickPick.placeholder = 'Package Information';
+
+    const items: vscode.QuickPickItem[] = [
+        {
+            label: `$(package) ${packageInfo.name}`,
+            description: `Version: ${packageInfo.version || 'Unknown'}`,
+            detail: packageInfo.description || packageInfo.summary || 'No description available'
+        }
+    ];
+
+    if (packageInfo.author) {
+        items.push({
+            label: `$(person) Author`,
+            description: packageInfo.author
+        });
+    }
+
+    if (packageInfo.license) {
+        items.push({
+            label: `$(law) License`,
+            description: packageInfo.license
+        });
+    }
+
+    if (packageInfo.homepage) {
+        items.push({
+            label: `$(link-external) Homepage`,
+            description: packageInfo.homepage,
+            detail: 'Click to open in browser'
+        });
+    }
+
+    if (packageInfo.location && packageInfo.installed) {
+        items.push({
+            label: `$(folder) Location`,
+            description: packageInfo.location
+        });
+    }
+
+    items.push({
+        label: `$(info) Status`,
+        description: packageInfo.installed ? 'Installed' : 'Available for installation'
+    });
+
+    // 添加操作按钮
+    if (packageInfo.installed) {
+        items.push({
+            label: `$(trash) Uninstall Package`,
+            description: 'Remove this package',
+            detail: 'Click to uninstall'
+        });
+    } else {
+        items.push({
+            label: `$(cloud-download) Install Package`,
+            description: 'Install this package',
+            detail: 'Click to install'
+        });
+    }
+
+    quickPick.items = items;
+
+    quickPick.onDidAccept(() => {
+        const selected = quickPick.selectedItems[0];
+        if (selected) {
+            if (selected.label.includes('Homepage') && packageInfo.homepage) {
+                vscode.env.openExternal(vscode.Uri.parse(packageInfo.homepage));
+            } else if (selected.label.includes('Uninstall')) {
+                quickPick.hide();
+                uninstallPackage(item);
+            } else if (selected.label.includes('Install')) {
+                quickPick.hide();
+                installPackage(item);
+            }
+        }
+    });
+
+    quickPick.show();
+}
+
+async function refreshPackages(): Promise<void> {
+    if (!luaRocksTreeProvider) {
+        vscode.window.showErrorMessage('LuaRocks not initialized');
+        return;
+    }
+
+    await luaRocksTreeProvider.refreshInstalled();
+    vscode.window.showInformationMessage('Package list refreshed');
+}
+
+async function showPackagesView(): Promise<void> {
+    await vscode.commands.executeCommand('emmylua.luarocks.focus');
+}
+
+function clearSearch(): void {
+    if (!luaRocksTreeProvider) {
+        vscode.window.showErrorMessage('LuaRocks not initialized');
+        return;
+    }
+
+    luaRocksTreeProvider.clearSearch();
+}
+
+async function checkLuaRocksInstallation(): Promise<void> {
+    if (!luaRocksManager) {
+        vscode.window.showErrorMessage('LuaRocks not initialized');
+        return;
+    }
+
+    const isInstalled = await luaRocksManager.checkLuaRocksInstallation();
+    if (isInstalled) {
+        vscode.window.showInformationMessage('LuaRocks is installed and ready to use');
+    } else {
+        const action = await vscode.window.showWarningMessage(
+            'LuaRocks is not installed or not in PATH',
+            'Install Guide',
+            'Dismiss'
+        );
+        if (action === 'Install Guide') {
+            vscode.env.openExternal(vscode.Uri.parse('https://luarocks.org/#quick-start'));
         }
     }
 }
