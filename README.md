@@ -8,6 +8,12 @@
 
 目前与上游`emmylua-rust`版本同步, 不排除未来会与上游版本出现差异, 可能会添加一些不允许合并进上游 lsp 的特性.
 
+## ⚠️ Attention
+
+**This plugin has been altered original, mainly removing the debugger that comes with emmylua and adding i18n (internationalization) integration to bring it closer in line with the LuaLS.
+
+Currently synchronized with the upstream emmylua-rust version; it is not ruled out that there will be differences with the upstream version in the future, and some features that are not merged with the upstream lsp may be added.**
+
 EmmyLua is a powerful Lua language support extension for Visual Studio Code, providing intelligent code completion, debugging, and analysis capabilities.
 
 ## 📋 Quick Links
