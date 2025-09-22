@@ -70,6 +70,7 @@ export function deactivate(): void {
 
 async function startServer(): Promise<void> {
     try {
+        extensionContext.setServerStatus({ health: 'ok'});
         await doStartServer();
     } catch (reason) {
         extensionContext.setServerStatus({
