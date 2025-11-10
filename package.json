@@ -2,7 +2,7 @@
     "displayName": "emmylua-luals",
     "name": "emmylua-luals",
     "description": "EmmyLua with LuaLS-oriented behavior",
-    "version": "0.9.30",
+    "version": "0.9.32",
     "icon": "res/icon.png",
     "publisher": "xuhuanzy",
     "engines": {
@@ -38,6 +38,11 @@
             {
                 "command": "emmy.stopServer",
                 "title": "EmmyLua: Stop EmmyLua Language Server"
+            },
+            {
+                "command": "emmy.showSyntaxTree",
+                "title": "EmmyLua: Show Syntax Tree",
+                "icon": "$(symbol-structure)"
             },
             {
                 "command": "emmylua.luarocks.searchPackages",

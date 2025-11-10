@@ -1,8 +1,14 @@
-import { LanguageConfiguration, IndentAction, AutoClosingPair, SyntaxTokenType, IndentationRule } from "vscode";
-import { workspace } from "vscode";
-import { get } from "./configRenames";
+import { LanguageConfiguration, IndentAction, IndentationRule, OnEnterRule, AutoClosingPair, SyntaxTokenType } from 'vscode';
+import { ConfigurationManager } from './configRenames';
+
+/**
+ * Lua language configuration for VS Code
+ * Provides indentation rules, on-enter rules, and word patterns for Lua
+ */
 export class LuaLanguageConfiguration implements LanguageConfiguration {
-    public onEnterRules: any[];
+    public readonly onEnterRules: OnEnterRule[];
+    public readonly indentationRules: IndentationRule;
+    public readonly wordPattern: RegExp;
 
     public autoClosingPairs: AutoClosingPair[] = [
         { open: "{", close: "}" },
@@ -18,86 +24,109 @@ export class LuaLanguageConfiguration implements LanguageConfiguration {
     ];
 
     constructor() {
-        this.onEnterRules = [
+        // Configure annotation completion rules based on user settings
+        const configManager = new ConfigurationManager();
+        const completeAnnotation = configManager.isCompleteAnnotationEnabled();
+
+        this.onEnterRules = this.buildOnEnterRules(completeAnnotation);
+        this.indentationRules = this.buildIndentationRules();
+        this.wordPattern = this.buildWordPattern();
+    }
+
+    /**
+     * Build on-enter rules for auto-indentation and annotation completion
+     */
+    private buildOnEnterRules(enableAnnotationCompletion: boolean): OnEnterRule[] {
+        const baseRules: OnEnterRule[] = [
+            // Function with end block
             {
-                // 匹配 function 语句的行
                 beforeText: /^\s*function\s+\w*\s*\(.*\)\s*$/,
                 afterText: /^\s*end\s*$/,
-                action: { indentAction: IndentAction.IndentOutdent, appendText: "\t" }
+                action: {
+                    indentAction: IndentAction.IndentOutdent,
+                    appendText: '\t'
+                }
             },
+            // Local function assignment with end block
             {
-                // 匹配局部函数定义的行
                 beforeText: /^\s*local\s+\w+\s*=\s*function\s*\(.*\)\s*$/,
                 afterText: /^\s*end\s*$/,
-                action: { indentAction: IndentAction.IndentOutdent, appendText: "\t" }
+                action: {
+                    indentAction: IndentAction.IndentOutdent,
+                    appendText: '\t'
+                }
             },
+            // Anonymous function assignment with end block
             {
-                // 匹配 xxx = function 语句的行
                 beforeText: /^\s*.*\s*=\s*function\s*\(.*\)\s*$/,
                 afterText: /^\s*end\s*$/,
-                action: { indentAction: IndentAction.IndentOutdent, appendText: "\t" }
+                action: {
+                    indentAction: IndentAction.IndentOutdent,
+                    appendText: '\t'
+                }
             },
+            // Local function declaration with end block
             {
-                // 匹配 local function 语句的行
                 beforeText: /^\s*local\s+function\s+\w*\s*\(.*\)\s*$/,
                 afterText: /^\s*end\s*$/,
-                action: { indentAction: IndentAction.IndentOutdent, appendText: "\t" }
+                action: {
+                    indentAction: IndentAction.IndentOutdent,
+                    appendText: '\t'
+                }
             }
         ];
 
-        const config = workspace.getConfiguration(
-            undefined,
-            workspace.workspaceFolders?.[0]
-        );
-        const completeAnnotation = get<boolean>(config, 'emmylua.language.completeAnnotation') ?? true;
-        if (completeAnnotation) {
-            this.onEnterRules = [
+        // Add annotation completion rules if enabled
+        if (enableAnnotationCompletion) {
+            const annotationRules: OnEnterRule[] = [
+                // Continue annotation with space (---)
                 {
-                    beforeText: /^\s*---@/,
+                    beforeText: /^---\s+/,
                     action: {
                         indentAction: IndentAction.None,
-                        appendText: "---@"
+                        appendText: '--- '
                     }
                 },
+                // Continue annotation without space (---)
                 {
-                    beforeText: /^\s*--- @/,
+                    beforeText: /^---$/,
                     action: {
                         indentAction: IndentAction.None,
-                        appendText: "--- @"
+                        appendText: '---'
                     }
-                },
-                {
-                    beforeText: /^\s*--- /,
-                    action: {
-                        indentAction: IndentAction.None,
-                        appendText: "--- "
-                    }
-                },
-                {
-                    beforeText: /^\s*---/,
-                    action: {
-                        indentAction: IndentAction.None,
-                        appendText: "---"
-                    }
-                },
-                ...this.onEnterRules
+                }
             ];
+
+            return [...annotationRules, ...baseRules];
         }
+
+        return baseRules;
     }
 
-    public indentationRules: IndentationRule = {
-        // 匹配需要在下一行增加缩进的模式，排除单行结构（如 function() end）
-        indentNextLinePattern: /^\s*(local\s+\w+\s*=\s*function\s*\(.*\)\s*$|function\s+\w*\s*\(.*\)\s*$|.*\s*do\s*$|.*\s*=\s*function\s*\(.*\)\s*$)/,
+    /**
+     * Build indentation rules for Lua syntax
+     */
+    private buildIndentationRules(): IndentationRule {
+        return {
+            // Increase indent after these patterns (excluding single-line constructs)
+            increaseIndentPattern: /^\s*((function\s+\w*\s*\(.*\)\s*$)|(local\s+function\s+\w*\s*\(.*\)\s*$)|(local\s+\w+\s*=\s*function\s*\(.*\)\s*$)|(.*\s*=\s*function\s*\(.*\)\s*$)|(if\s+.*\s+then\s*$)|(elseif\s+.*\s+then\s*$)|(else\s*$)|(for\s+.*\s+do\s*$)|(while\s+.*\s+do\s*$)|(repeat\s*$)|(do\s*$))/,
 
-        // 匹配需要减少缩进的模式，例如 else、elseif 和 end 关键字
-        decreaseIndentPattern: /^\s*(else|elseif|end|until)\b/,
+            // Decrease indent for these patterns
+            decreaseIndentPattern: /^\s*(else|elseif|end|until)\b/,
 
-        // 匹配需要增加缩进的模式，但排除单行结构（如 function() end, if then else end）
-        increaseIndentPattern: /^\s*((function\s+\w*\s*\(.*\)\s*$)|(local\s+function\s+\w*\s*\(.*\)\s*$)|(local\s+\w+\s*=\s*function\s*\(.*\)\s*$)|(.*\s*=\s*function\s*\(.*\)\s*$)|(if\s+.*\s+then\s*$)|(elseif\s+.*\s+then\s*$)|(else\s*$)|(for\s+.*\s+do\s*$)|(while\s+.*\s+do\s*$)|(repeat\s*$)|(do\s*$))/,
+            // Indent next line after these patterns
+            indentNextLinePattern: /^\s*(local\s+\w+\s*=\s*function\s*\(.*\)\s*$|function\s+\w*\s*\(.*\)\s*$|.*\s*do\s*$|.*\s*=\s*function\s*\(.*\)\s*$)/,
 
-        // 匹配不应改变缩进的模式，例如单行注释和多行注释的结束
-        unIndentedLinePattern: /^\s*(--.*|.*\*\/)$/
-    };
+            // Don't change indent for these lines (comments)
+            unIndentedLinePattern: /^\s*(--.*|.*\*\/)$/
+        };
+    }
 
-    public wordPattern = /((?<=')[^']+(?='))|((?<=")[^"]+(?="))|(-?\d*\.\d\w*)|([^\`\~\!\@\$\^\&\*\(\)\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\s]+)/g;
+    /**
+     * Build word pattern for Lua
+     * Matches strings, numbers, and identifiers
+     */
+    private buildWordPattern(): RegExp {
+        return /((?<=')[^']+(?='))|((?<=")[^"]+(?="))|(-?\d*\.\d\w*)|([^\`\~\!\@\$\^\&\*\(\)\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\s]+)/g;
+    }
 }
