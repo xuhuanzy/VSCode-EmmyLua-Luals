@@ -9,7 +9,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from
 import { LuaLanguageConfiguration } from './languageConfiguration';
 import { EmmyContext } from './emmyContext';
 import { IServerLocation, IServerPosition } from './lspExtension';
-import { ConfigurationManager } from './configRenames';
+import { ConfigurationManager } from './configManager';
 import { EmmyrcSchemaContentProvider } from './emmyrcSchemaContentProvider';
 import { SyntaxTreeManager, setClientGetter } from './syntaxTreeProvider';
 import { registerTerminalLinkProvider } from './luaTerminalLinkProvider';

@@ -1,5 +1,130 @@
 # 🚀 Change Log
 
+## [0.9.36] - 2026-4-1
+
+### ✨ 新增
+
+- **支持 `@return_overload` 注解**：新增对 `@return_overload` 注解的支持，允许像 pcall 一样定义函数返回值
+```lua
+---@return_overload true, string
+---@return_overload false, integer
+local function func()
+end
+```
+此时 `local ok, res = func()` 中的两个变量将被正确推断为 `ok: true, res: string` 和 `ok: false, res: integer`。
+
+- **新格式化器准备**：语言服务器计划在 0.23.0 版本引入新的格式化器。该格式化器目前可在 CLI 模式中体验。您可以从发布页面下载最新的格式化工具 `luafmt`。相关文档请参阅 [EmmyLua 格式化器文档索引](docs/emmylua_formatter/README_EN.md)。该格式化工具受 Prettier 启发，同时保留了 EmmyLua CodeStyle 的更多风格选项。在原有格式化器被替换后，emmylua_ls 将不再依赖高版本 C++ 编译器，格式化结果也将更加稳定。但仍存在一些格式化效果欠佳的边界情况，将在后续版本中持续修复。
+
+- **支持 `@schema` URL 注解**：新增对 `@schema` 注解的支持，可用于为 json-schema 定义的 API 添加代码补全和悬停提示。例如：
+```lua
+---@schema https://raw.githubusercontent.com/EmmyLuaLs/emmylua-analyzer-rust/refs/heads/main/crates/emmylua_code_analysis/resources/schema.json
+local c = {
+  -- 将建议 `diagnostics` 等字段
+}
+
+```
+
+### 🔧 变更
+
+- **更新 luars 至 0.17.0**：将 `luars` 依赖更新至 0.17.0 版本。
+- **性能优化**：通过一系列措施进一步优化了性能
+
+### 🐛 修复
+
+- 修复了 package.searchpath 在无匹配时返回 nil+error 的问题
+- 修复了模块递归问题
+- 修复了 shebang 支持
+- 修复了全局声明支持
+- 修复了 select(n, func()) 在 func 返回多个值时正确收窄类型
+- 修复了 alias-call 返回值解析并简化流赋值
+- 修复了 pairs 返回的 next 应接受 2 个参数
+- 修复了分段边界模糊 require 匹配的强制执行
+- 修复了在重复后缀匹配中稳定模糊 require 解析
+- 修复了 package.searchpath 在无匹配时返回 nil+error 的问题
+- 修复了 lua5.5 命名 vararg 支持：不再报告语法错误
+
+## [0.9.35] - 2026-2-2
+
+### ✨ 新增
+- **支持 .emmyrc.lua 配置文件**：语言服务器和 emmylua_check 现在除了 `.emmyrc.json` 和 `.luarc.json` 外，还支持从 `.emmyrc.lua` 加载配置。Lua 配置通过 [luars](https://github.com/CppCXY/lua-rs) 库解析。一个基本配置示例如下：
+```lua
+local diagnostics = {
+  disable = { "undefined-global" },
+}
+
+return {
+  diagnostics = diagnostics,
+}
+```
+可以使用 os、table、utf8、string 等标准库编写更复杂的配置逻辑。可使用 `print` 进行调试；其输出会被重定向到语言服务器日志。
+
+注意：当前的 `.emmyrc.lua` 尚无专门的代码补全；将在未来版本中添加。
+
+注意2：`luars` 项目由我在 AI 协助下开发。它是一个接近完整的 Lua 5.5 实现，但仍属实验性质，包含许多 bug，请谨慎使用。
+
+### 🔧 变更
+- **增强 workspace.library**：`workspace.library` 现在支持为每个条目配置忽略项，例如：
+```json
+{
+  "workspace": {
+    "library": [
+      {
+        "path": "/path/to/lib1",
+        "ignoreGlobs": [ "**/test/**" ],
+        "ignoreDir": ["docs"]
+      }
+    ]
+  }
+}
+```
+此外，`workspace.library` 现在也可以直接指向单个文件而不是目录：
+```json
+{
+  "workspace": {
+    "library": [
+      "/path/to/single/file.lua"
+    ]
+  }
+}
+```
+
+- **改进 'and'/'or' 的类型收窄**：在与可空类型及表/字面量表达式配合使用时，改进了对 `and` 与 `or` 运算的类型收窄。
+
+### 🐛 修复
+- 修复了 preferred_local_alias 诊断问题  
+- 修复了一些类型检查问题  
+- 修复引用计算中的递归行为  
+- 优化了与泛型相关的计算
+
+
+## [0.9.34] - 2025-12-29
+
+### ✨ 新增
+
+- **支持 Lua 5.5**：新增对 Lua 5.5 语法和特性的支持，包括全局声明、table.create 及命名 vararg。例如：
+```lua
+global *
+global <const> a, b, c
+global d, e, f = 1, 2, 3
+table.create(10, 0)
+function func(...args)
+end
+```
+
+- **支持格式化 Lua 5.5 语法**：内置格式化器现在支持格式化 Lua 5.5 语法。
+- **新增标准库 i18n 翻译**：为标准库新增国际化函数。
+- **支持调用参数片段补全**：当 "completion.callSnippet": true 启用时，在函数调用处提供参数片段补全。
+- **支持 param/@return 补全**：在函数上方输入 `---@` 时会显示 `param/@return` 补全建议；接受建议会自动填充参数名和类型。
+
+### 🔧 变更
+
+- **工作区变量搜索优化**：优化了工作区范围的变量搜索，会根据输入的大小写决定使用区分大小写还是不区分大小写的匹配。
+
+### 🐛 修复
+
+- **修复整数字面量解析问题**：超过 int64 的整数现在会被识别为浮点数，而不是被当作 0。
+- **修复类型检查**：修复了若干类型检查相关的问题。
+
 ## [0.9.33] - 2025-12-8
 
 一个实验性的Lua解释器项目: https://github.com/CppCXY/lua-rs

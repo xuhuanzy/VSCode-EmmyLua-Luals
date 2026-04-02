@@ -2,7 +2,7 @@
     "displayName": "emmylua-luals",
     "name": "emmylua-luals",
     "description": "EmmyLua with LuaLS-oriented behavior",
-    "version": "0.9.33",
+    "version": "0.9.36",
     "icon": "res/icon.png",
     "publisher": "xuhuanzy",
     "engines": {
@@ -118,7 +118,7 @@
                 {
                     "id": "emmylua.luarocks",
                     "name": "LuaRocks",
-                    "when": "resourceExtname == .lua",
+                    "when": "resourceExtname == .lua || resourceExtname == .rockspec",
                     "icon": "$(package)"
                 }
             ]
@@ -170,15 +170,15 @@
             "commandPalette": [
                 {
                     "command": "emmylua.luarocks.installPackage",
-                    "when": "resourceExtname == .lua"
+                    "when": "resourceExtname == .lua || resourceExtname == .rockspec"
                 },
                 {
                     "command": "emmylua.luarocks.searchPackages",
-                    "when": "resourceExtname == .lua"
+                    "when": "resourceExtname == .lua || resourceExtname == .rockspec"
                 },
                 {
                     "command": "emmylua.luarocks.checkInstallation",
-                    "when": "resourceExtname == .lua"
+                    "when": "resourceExtname == .lua || resourceExtname == .rockspec"
                 }
             ]
         },
@@ -839,28 +839,10 @@
                         "default": "",
                         "markdownDescription": "%config.emmylua.ls.executablePath.description%"
                     },
-                    "emmylua.misc.executablePath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "markdownDescription": "%config.emmylua.ls.executablePath.description%",
-                        "markdownDeprecationMessage": "Use `emmylua.ls.executablePath` instead"
-                    },
                     "emmylua.ls.globalConfigPath": {
                         "type": "string",
                         "default": "",
                         "markdownDescription": "%config.emmylua.ls.globalConfigPath.description%"
-                    },
-                    "emmylua.misc.globalConfigPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
-                        "markdownDescription": "%config.emmylua.ls.globalConfigPath.description%",
-                        "markdownDeprecationMessage": "Use `emmylua.ls.globalConfigPath` instead"
                     },
                     "lua.trace.server": {
                         "type": "string",
