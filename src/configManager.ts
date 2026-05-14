@@ -18,6 +18,19 @@ export function get<T>(
     return config.get<T>(key, defaultValue as T);
 }
 
+export function getPreferredConfigurationScope(uri?: vscode.Uri): vscode.ConfigurationScope | undefined {
+    if (uri) {
+        return vscode.workspace.getWorkspaceFolder(uri) ?? uri;
+    }
+
+    const activeUri = vscode.window.activeTextEditor?.document.uri;
+    if (activeUri) {
+        return vscode.workspace.getWorkspaceFolder(activeUri) ?? activeUri;
+    }
+
+    return vscode.workspace.workspaceFolders?.[0];
+}
+
 /**
  * 配置管理器
  */

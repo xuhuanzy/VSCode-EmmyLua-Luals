@@ -57,6 +57,7 @@ export class EmmyContext implements vscode.Disposable {
     private _client?: LanguageClient;
     private _serverStatus: ServerStatus;
     private readonly _statusBar: vscode.StatusBarItem;
+    private readonly _languageStatus: vscode.LanguageStatusItem;
     private readonly _disposables: vscode.Disposable[] = [];
 
     constructor(
@@ -68,11 +69,20 @@ export class EmmyContext implements vscode.Disposable {
             vscode.StatusBarAlignment.Left,
             100
         );
+        this._languageStatus = vscode.languages.createLanguageStatusItem(
+            'emmylua.serverStatus',
+            { language: this.LANGUAGE_ID }
+        );
 
         // Status bar click shows quick pick menu instead of direct action
         this._statusBar.command = 'emmy.showServerMenu';
+        this._languageStatus.name = 'EmmyLua';
+        this._languageStatus.command = {
+            command: 'emmy.showServerMenu',
+            title: 'EmmyLua: Server Control'
+        };
 
-        this._disposables.push(this._statusBar);
+        this._disposables.push(this._statusBar, this._languageStatus);
         this.updateStatusBar();
     }
 
@@ -233,6 +243,11 @@ export class EmmyContext implements vscode.Disposable {
                 detail: 'Show detailed server status and configuration',
             },
             {
+                label: '$(heart-pulse) Open Diagnostics',
+                description: 'Open a diagnostics report',
+                detail: 'Show runtime status, configuration scope, and server executable details',
+            },
+            {
                 label: '$(output) Show Output',
                 description: 'Open output channel',
                 detail: 'View server logs and output',
@@ -262,6 +277,8 @@ export class EmmyContext implements vscode.Disposable {
             await vscode.commands.executeCommand('emmy.startServer');
         } else if (selected.label.includes('Server Info')) {
             this.showServerInfo();
+        } else if (selected.label.includes('Diagnostics')) {
+            await vscode.commands.executeCommand('emmy.showServerDiagnostics');
         } else if (selected.label.includes('Output')) {
             this._client?.outputChannel?.show();
         } else if (selected.label.includes('Syntax Tree')) {
@@ -317,6 +334,46 @@ export class EmmyContext implements vscode.Disposable {
         this._statusBar.backgroundColor = config.backgroundColor;
         this._statusBar.tooltip = this.createTooltip();
         this._statusBar.show();
+
+        this._languageStatus.text = this.getLanguageStatusText();
+        this._languageStatus.detail = this.getLanguageStatusDetail();
+        this._languageStatus.busy =
+            this._serverStatus.state === ServerState.Starting ||
+            this._serverStatus.state === ServerState.Stopping;
+        this._languageStatus.severity = this.getLanguageStatusSeverity();
+    }
+
+    private getLanguageStatusText(): string {
+        const textByState: Record<ServerState, string> = {
+            [ServerState.Starting]: 'EmmyLua: starting server',
+            [ServerState.Running]: 'EmmyLua: server running',
+            [ServerState.Stopping]: 'EmmyLua: stopping server',
+            [ServerState.Stopped]: 'EmmyLua: server stopped',
+            [ServerState.Warning]: 'EmmyLua: server warning',
+            [ServerState.Error]: 'EmmyLua: server error',
+        };
+
+        return textByState[this._serverStatus.state];
+    }
+
+    private getLanguageStatusDetail(): string {
+        const detailParts = [this._serverStatus.message, this._serverStatus.details]
+            .filter((part): part is string => Boolean(part?.trim()))
+            .map((part) => part.trim());
+
+        return detailParts.join('\n\n') || 'Open server control for details and actions.';
+    }
+
+    private getLanguageStatusSeverity(): vscode.LanguageStatusSeverity {
+        if (this._serverStatus.state === ServerState.Error) {
+            return vscode.LanguageStatusSeverity.Error;
+        }
+
+        if (this._serverStatus.state === ServerState.Warning) {
+            return vscode.LanguageStatusSeverity.Warning;
+        }
+
+        return vscode.LanguageStatusSeverity.Information;
     }
 
     /**

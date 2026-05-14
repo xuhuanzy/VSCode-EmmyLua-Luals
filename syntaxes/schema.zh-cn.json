@@ -151,6 +151,7 @@
                 "ignoreGlobs": [],
                 "library": [],
                 "moduleMap": [],
+                "packages": [],
                 "preloadFileSize": 0,
                 "reindexDuration": 5000,
                 "workspaceRoots": []
@@ -187,7 +188,7 @@
                     "const": "missing-return"
                 },
                 {
-                    "description": "Param Type not match",
+                    "description": "参数类型不匹配。",
                     "type": "string",
                     "const": "param-type-mismatch"
                 },
@@ -387,6 +388,11 @@
                     "const": "cast-type-mismatch"
                 },
                 {
+                    "description": "无法解析 require 导入。",
+                    "type": "string",
+                    "const": "unresolved-require"
+                },
+                {
                     "description": "require 模块不可见。",
                     "type": "string",
                     "const": "require-module-not-visible"
@@ -397,12 +403,12 @@
                     "const": "enum-value-mismatch"
                 },
                 {
-                    "description": "preferred-local-alias",
+                    "description": "首选局部别名。",
                     "type": "string",
                     "const": "preferred-local-alias"
                 },
                 {
-                    "description": "readonly",
+                    "description": "只读。",
                     "type": "string",
                     "const": "read-only"
                 },
@@ -425,6 +431,26 @@
                     "description": "attribute-redundant-parameter",
                     "type": "string",
                     "const": "attribute-redundant-parameter"
+                },
+                {
+                    "description": "倒置 if 语句。",
+                    "type": "string",
+                    "const": "invert-if"
+                },
+                {
+                    "description": "该值不是可调用类型。",
+                    "type": "string",
+                    "const": "call-non-callable"
+                },
+                {
+                    "description": "类型访问修饰符不一致。",
+                    "type": "string",
+                    "const": "inconsistent-type-access-modifier"
+                },
+                {
+                    "description": "缺少类型参数。",
+                    "type": "string",
+                    "const": "missing-type-argument"
                 }
             ]
         },
@@ -1085,11 +1111,11 @@
                     }
                 },
                 "library": {
-                    "description": "库路径。例如：\"/usr/local/share/lua/5.1\"",
+                    "description": "库路径。可以是字符串路径或带有路径和忽略规则的对象。例如：\"/usr/local/share/lua/5.1\" 或 [{\"path\": \"/usr/local/share/lua/5.1\", \"ignoreDir\": [\"test\"], \"ignoreGlobs\": [\"**/*.spec.lua\"]}]",
                     "type": "array",
                     "default": [],
                     "items": {
-                        "type": "string"
+                        "$ref": "#/$defs/EmmyrcWorkspacePathItem"
                     }
                 },
                 "moduleMap": {
@@ -1098,6 +1124,14 @@
                     "default": [],
                     "items": {
                         "$ref": "#/$defs/EmmyrcWorkspaceModuleMap"
+                    }
+                },
+                "packages": {
+                    "description": "模块包路径。可以是字符串路径或带有路径和忽略规则的对象。将父目录视为 `library`，但仅添加来自指定目录的文件。例如：\"/usr/local/share/lua/5.1/module\" 或 [{\"path\": \"/usr/local/share/lua/5.1/module\", \"ignoreDir\": [\"test\"], \"ignoreGlobs\": [\"**/*.spec.lua\"]}]",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "$ref": "#/$defs/EmmyrcWorkspacePathItem"
                     }
                 },
                 "preloadFileSize": {
@@ -1136,6 +1170,46 @@
             "required": [
                 "pattern",
                 "replace"
+            ]
+        },
+        "EmmyrcWorkspacePathConfig": {
+            "type": "object",
+            "properties": {
+                "ignoreDir": {
+                    "description": "忽略此条目中的目录。",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ignoreGlobs": {
+                    "description": "忽略此条目中的文件模式。例如：[\"**/*.lua\"]",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "path": {
+                    "description": "工作区条目路径。",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "path"
+            ]
+        },
+        "EmmyrcWorkspacePathItem": {
+            "anyOf": [
+                {
+                    "description": "简单的工作空间入口路径字符串",
+                    "type": "string"
+                },
+                {
+                    "description": "工作区入口配置，包含路径与忽略规则",
+                    "$ref": "#/$defs/EmmyrcWorkspacePathConfig"
+                }
             ]
         }
     }

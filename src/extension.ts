@@ -9,7 +9,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from
 import { LuaLanguageConfiguration } from './languageConfiguration';
 import { EmmyContext } from './emmyContext';
 import { IServerLocation, IServerPosition } from './lspExtension';
-import { ConfigurationManager } from './configManager';
+import { ConfigurationManager, getPreferredConfigurationScope } from './configManager';
 import { EmmyrcSchemaContentProvider } from './emmyrcSchemaContentProvider';
 import { SyntaxTreeManager, setClientGetter } from './syntaxTreeProvider';
 import { registerTerminalLinkProvider } from './luaTerminalLinkProvider';
@@ -74,7 +74,9 @@ function registerCommands(context: vscode.ExtensionContext): void {
         // Server commands
         { id: 'emmy.stopServer', handler: stopServer },
         { id: 'emmy.restartServer', handler: restartServer },
+        { id: 'emmy.startServer', handler: restartServer },
         { id: 'emmy.showServerMenu', handler: showServerMenu },
+        { id: 'emmy.showServerDiagnostics', handler: showServerDiagnostics },
         { id: 'emmy.showReferences', handler: showReferences },
         { id: 'emmy.showSyntaxTree', handler: showSyntaxTree },
         // LuaRocks commands
@@ -175,10 +177,13 @@ async function startServer(): Promise<void> {
         vscode.window.showErrorMessage(
             `Failed to start EmmyLua language server: ${errorMessage}`,
             'Retry',
+            'Diagnostics',
             'Show Logs'
         ).then(action => {
             if (action === 'Retry') {
                 restartServer();
+            } else if (action === 'Diagnostics') {
+                showServerDiagnostics();
             } else if (action === 'Show Logs') {
                 extensionContext.client?.outputChannel?.show();
             }
@@ -191,8 +196,7 @@ async function startServer(): Promise<void> {
  */
 async function doStartServer(): Promise<void> {
     const context = extensionContext.vscodeContext;
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    const configManager = new ConfigurationManager(workspaceFolder);
+    const configManager = new ConfigurationManager(getPreferredConfigurationScope());
 
     const clientOptions: LanguageClientOptions = {
         documentSelector: [{ scheme: 'file', language: extensionContext.LANGUAGE_ID }],
@@ -296,7 +300,7 @@ function resolveExecutablePath(
         // Make executable on Unix-like systems
         if (platform !== 'win32') {
             try {
-                fs.chmodSync(executablePath, '777');
+                fs.chmodSync(executablePath, 0o755);
             } catch (error) {
                 console.warn(`Failed to chmod language server:`, error);
             }
@@ -327,6 +331,90 @@ async function restartServer(): Promise<void> {
 
 function showServerMenu(): void {
     extensionContext.showServerMenu();
+}
+
+async function showServerDiagnostics(): Promise<void> {
+    const configurationScope = getPreferredConfigurationScope();
+    const configurationManager = new ConfigurationManager(configurationScope);
+    const activeDocument = vscode.window.activeTextEditor?.document;
+    const activeWorkspaceFolder = activeDocument
+        ? vscode.workspace.getWorkspaceFolder(activeDocument.uri)
+        : undefined;
+    const workspaceFolders = vscode.workspace.workspaceFolders ?? [];
+
+    const lines: string[] = [
+        '# EmmyLua Server Diagnostics',
+        '',
+        `**Status:** ${extensionContext.serverStatus.state}`,
+        `**Trusted Workspace:** ${vscode.workspace.isTrusted ? 'yes' : 'no'}`,
+        `**Workspace Folders:** ${workspaceFolders.length || 0}`,
+        `**Active Lua File:** ${activeDocument?.languageId === extensionContext.LANGUAGE_ID ? activeDocument.uri.fsPath : 'none'}`,
+        `**Configuration Scope:** ${describeConfigurationScope(configurationScope)}`,
+        `**Resolved Server Executable:** ${resolveExecutablePath(extensionContext.vscodeContext, configurationManager)}`,
+        `**Configured Debug Port:** ${configurationManager.getDebugPort() ?? 'disabled'}`,
+        `**Configured Global Config:** ${configurationManager.getGlobalConfigPath()?.trim() || 'none'}`,
+        `**Configured Start Parameters:** ${formatStartParameters(configurationManager.getStartParameters())}`,
+        '',
+        '## Quick Actions',
+        '',
+        '- Run command: `EmmyLua: Restart Lua Server`',
+        '- Run command: `EmmyLua: Stop EmmyLua Language Server`',
+        '- Open the EmmyLua output channel from the server menu',
+    ];
+
+    if (extensionContext.serverStatus.message) {
+        lines.push('', '## Message', '', extensionContext.serverStatus.message);
+    }
+
+    if (extensionContext.serverStatus.details) {
+        lines.push('', '## Details', '', '```text', extensionContext.serverStatus.details, '```');
+    }
+
+    if (activeWorkspaceFolder) {
+        lines.push('', '## Active Workspace Folder', '', activeWorkspaceFolder.uri.fsPath);
+    }
+
+    if (workspaceFolders.length > 0) {
+        lines.push('', '## Workspace Folders', '');
+        for (const folder of workspaceFolders) {
+            lines.push(`- ${folder.name}: ${folder.uri.fsPath}`);
+        }
+    }
+
+    const document = await vscode.workspace.openTextDocument({
+        content: lines.join('\n'),
+        language: 'markdown'
+    });
+
+    await vscode.window.showTextDocument(document, {
+        preview: true,
+        viewColumn: vscode.ViewColumn.Beside,
+    });
+}
+
+function describeConfigurationScope(scope: vscode.ConfigurationScope | undefined): string {
+    if (!scope) {
+        return 'global/default';
+    }
+
+    if (scope instanceof vscode.Uri) {
+        return scope.fsPath;
+    }
+
+    if (typeof scope === 'object' && scope !== null && 'uri' in scope) {
+        const workspaceFolder = scope as vscode.WorkspaceFolder;
+        return workspaceFolder.uri.fsPath;
+    }
+
+    return 'language override';
+}
+
+function formatStartParameters(parameters: string[]): string {
+    if (parameters.length === 0) {
+        return 'none';
+    }
+
+    return parameters.join(' ');
 }
 
 function showReferences(uri: string, pos: IServerPosition, locations: IServerLocation[]) {

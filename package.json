@@ -2,7 +2,7 @@
     "displayName": "emmylua-luals",
     "name": "emmylua-luals",
     "description": "EmmyLua with LuaLS-oriented behavior",
-    "version": "0.9.36",
+    "version": "0.9.38",
     "icon": "res/icon.png",
     "publisher": "xuhuanzy",
     "engines": {
@@ -29,11 +29,29 @@
         "url": "https://github.com/EmmyLua/VSCode-EmmyLua/issues"
     },
     "main": "./out/extension",
+    "extensionKind": [
+        "workspace"
+    ],
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": false,
+            "description": "%capabilities.untrustedWorkspaces.description%"
+        },
+        "virtualWorkspaces": {
+            "supported": false,
+            "description": "%capabilities.virtualWorkspaces.description%"
+        }
+    },
     "contributes": {
         "commands": [
             {
                 "command": "emmy.restartServer",
                 "title": "EmmyLua: Restart Lua Server"
+            },
+            {
+                "command": "emmy.showServerDiagnostics",
+                "title": "EmmyLua: Open Server Diagnostics",
+                "icon": "$(heart-pulse)"
             },
             {
                 "command": "emmy.stopServer",

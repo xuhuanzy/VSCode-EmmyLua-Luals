@@ -24,6 +24,10 @@
         "en": "Await in sync",
         "zh-CN": "在同步上下文中使用 await。"
     },
+    "DiagnosticCode.call-non-callable": {
+        "en": "Call to a non-callable value",
+        "zh-CN": "该值不是可调用类型。"
+    },
     "DiagnosticCode.cast-type-mismatch": {
         "en": "cast-type-mismatch"
     },
@@ -82,9 +86,17 @@
         "en": "Incomplete signature doc",
         "zh-CN": "不完整的签名文档。"
     },
+    "DiagnosticCode.inconsistent-type-access-modifier": {
+        "en": "inconsistent-type-access-modifier",
+        "zh-CN": "类型访问修饰符不一致。"
+    },
     "DiagnosticCode.inject-field": {
         "en": "Inject Field",
         "zh-CN": "注入字段。"
+    },
+    "DiagnosticCode.invert-if": {
+        "en": "invert-if",
+        "zh-CN": "倒置 if 语句。"
     },
     "DiagnosticCode.iter-variable-reassign": {
         "en": "Iter variable reassign",
@@ -114,6 +126,10 @@
         "en": "Missing return value",
         "zh-CN": "缺少返回值。"
     },
+    "DiagnosticCode.missing-type-argument": {
+        "en": "missing-type-argument",
+        "zh-CN": "缺少类型参数。"
+    },
     "DiagnosticCode.need-check-nil": {
         "en": "Need check nil",
         "zh-CN": "需要检查 nil。"
@@ -123,13 +139,16 @@
         "zh-CN": "在 assert 中使用了非字面量表达式。"
     },
     "DiagnosticCode.param-type-mismatch": {
-        "en": "Param Type not match"
+        "en": "Param Type not match",
+        "zh-CN": "参数类型不匹配。"
     },
     "DiagnosticCode.preferred-local-alias": {
-        "en": "preferred-local-alias"
+        "en": "preferred-local-alias",
+        "zh-CN": "首选局部别名。"
     },
     "DiagnosticCode.read-only": {
-        "en": "readonly"
+        "en": "readonly",
+        "zh-CN": "只读。"
     },
     "DiagnosticCode.redefined-label": {
         "en": "Redefined label",
@@ -194,6 +213,10 @@
     "DiagnosticCode.unreachable-code": {
         "en": "Unreachable code",
         "zh-CN": "不可达的代码。"
+    },
+    "DiagnosticCode.unresolved-require": {
+        "en": "unresolved-require",
+        "zh-CN": "无法解析 require 导入。"
     },
     "DiagnosticCode.unused": {
         "en": "Unused",
@@ -491,12 +514,16 @@
         "zh-CN": "忽略的文件。例如：[\"**/*.lua\"]"
     },
     "EmmyrcWorkspace.library": {
-        "en": "Library paths. eg: \"/usr/local/share/lua/5.1\"",
-        "zh-CN": "库路径。例如：\"/usr/local/share/lua/5.1\""
+        "en": "Library paths. Can be a string path or an object with path and ignore rules.\neg: [\"/usr/local/share/lua/5.1\"] or [{\"path\": \"/usr/local/share/lua/5.1\", \"ignoreDir\": [\"test\"], \"ignoreGlobs\": [\"**/*.spec.lua\"]}]",
+        "zh-CN": "库路径。可以是字符串路径或带有路径和忽略规则的对象。例如：\"/usr/local/share/lua/5.1\" 或 [{\"path\": \"/usr/local/share/lua/5.1\", \"ignoreDir\": [\"test\"], \"ignoreGlobs\": [\"**/*.spec.lua\"]}]"
     },
     "EmmyrcWorkspace.moduleMap": {
         "en": "Module map. key is regex, value is new module regex\neg: {\n    \"^(.*)$\": \"module_$1\"\n    \"^lib(.*)$\": \"script$1\"\n}",
         "zh-CN": "模块映射列表。key 是正则表达式，value 是新的模块正则表达式\n 例如：{\n    \"^(.*)$\": \"module_$1\"\n    \"^lib(.*)$\": \"script$1\"\n}"
+    },
+    "EmmyrcWorkspace.packages": {
+        "en": "Package directories. Can be a string path or an object with path and ignore rules.\nTreat the parent directory as a `library`, but only add files from the specified directory.\neg: [\"/usr/local/share/lua/5.1/module\"] or [{\"path\": \"/usr/local/share/lua/5.1/module\", \"ignoreDir\": [\"test\"], \"ignoreGlobs\": [\"**/*.spec.lua\"]}]",
+        "zh-CN": "模块包路径。可以是字符串路径或带有路径和忽略规则的对象。将父目录视为 `library`，但仅添加来自指定目录的文件。例如：\"/usr/local/share/lua/5.1/module\" 或 [{\"path\": \"/usr/local/share/lua/5.1/module\", \"ignoreDir\": [\"test\"], \"ignoreGlobs\": [\"**/*.spec.lua\"]}]"
     },
     "EmmyrcWorkspace.reindexDuration": {
         "en": "Delay between changing a file and full project reindex, in milliseconds.",
@@ -505,5 +532,25 @@
     "EmmyrcWorkspace.workspaceRoots": {
         "en": "Workspace roots. eg: [\"src\", \"test\"]",
         "zh-CN": "工作区根目录列表。例如：[\"src\", \"test\"]"
+    },
+    "EmmyrcWorkspacePathConfig.ignoreDir": {
+        "en": "Ignore directories within this entry",
+        "zh-CN": "忽略此条目中的目录。"
+    },
+    "EmmyrcWorkspacePathConfig.ignoreGlobs": {
+        "en": "Ignore globs within this entry. eg: [\"**/*.lua\"]",
+        "zh-CN": "忽略此条目中的文件模式。例如：[\"**/*.lua\"]"
+    },
+    "EmmyrcWorkspacePathConfig.path": {
+        "en": "Workspace entry path",
+        "zh-CN": "工作区条目路径。"
+    },
+    "EmmyrcWorkspacePathItem.anyOf.0": {
+        "en": "Simple workspace entry path string",
+        "zh-CN": "简单的工作空间入口路径字符串"
+    },
+    "EmmyrcWorkspacePathItem.anyOf.1": {
+        "en": "Workspace entry configuration with path and ignore rules",
+        "zh-CN": "工作区入口配置，包含路径与忽略规则"
     }
 }

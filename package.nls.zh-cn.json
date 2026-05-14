@@ -1,4 +1,6 @@
 {
+    "capabilities.untrustedWorkspaces.description": "EmmyLua 需要运行本地语言服务器和调试器二进制，因此在不受信任的工作区中会被禁用。",
+    "capabilities.virtualWorkspaces.description": "EmmyLua 依赖直接文件系统访问和本地进程，因此不支持虚拟工作区。",
     "config.common.deprecated": "This option is deprecated",
     "config.common.enum.default.description": "使用 `.emmyrc.json` 中的值，或回退到默认值",
     "config.common.enum.off.description": "覆盖 `.emmyrc.json` 并禁用此选项",

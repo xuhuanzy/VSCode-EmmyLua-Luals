@@ -2,6 +2,33 @@
 
 [中文Log](CHANGELOG_CN.md)
 
+
+## [0.9.38] - 2026-5-14
+
+- **Fix range format issue**: Built-in formatter now supports range format
+- **Fix some formatting edge cases**: Fixed some formatting edge cases, which are still being continuously improved
+- **Fix some stuck loading issue** Fixed some issue that cause the language server stuck at loading workspace, and improve the loading performance of large workspace
+
+
+## [0.9.37] - 2026-5-11
+
+### 🔧 Changed
+
+- **New Formatter**: The new formatter(emmylua_formatter) is now the default formatter for the language server. For more information, please refer to [EmmyLua Formatter Documentation Index](https://github.com/EmmyLuaLs/emmylua-analyzer-rust/blob/main/docs/emmylua_formatter/README_EN.md).
+
+- **Enhance generic type inference**: Improved the generic type inference algorithm to better handle complex scenarios, such as nested generics and recursive types.
+
+- **Update dependencies**: Updated various dependencies to their latest versions, update luars to 0.19.0.
+
+- **Optimize performance**: Made several optimizations to improve the overall performance of the language server, including flow analyzis
+
+### 🐛 Fixed
+
+- Fix luajit complex number parsing issue
+- Fix local function semantic token
+- Fix compact luals type grammar fun(...):...
+
+
 ## [0.9.36] - 2026-4-1
 
 ### ✨ Added

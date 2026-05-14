@@ -23,11 +23,9 @@ export async function initializeLuaRocks(): Promise<void> {
         return;
     }
 
-    // Initialize LuaRocks manager
     luaRocksManager = new LuaRocksManager(workspaceFolder);
     luaRocksTreeProvider = new LuaRocksTreeProvider(luaRocksManager);
 
-    // Register tree view
     const treeView = vscode.window.createTreeView('emmylua.luarocks', {
         treeDataProvider: luaRocksTreeProvider,
         showCollapseAll: true
